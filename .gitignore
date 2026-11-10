@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.swp
+*~
+
+# Python (tools/build_levels.py)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node (only needed if you ever reinstall sql.js; vendor/ already has the files)
+node_modules/
+
+# Logs and scratch files
+*.log
+.tmp/
