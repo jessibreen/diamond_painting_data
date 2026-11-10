@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Jessica Breen
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Level content (lesson, data design, requests, questions): CC BY-NC-SA 4.0
+# Level content (lesson, data design, color key queries, questions): CC BY-NC-SA 4.0
 """Level 10: Outlined cat. Select by Location: boundary touches and intersect."""
 import math
 import random

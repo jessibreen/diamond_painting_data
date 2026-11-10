@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Jessica Breen
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Level content (lesson, data design, requests, questions): CC BY-NC-SA 4.0
+# Level content (lesson, data design, color key queries, questions): CC BY-NC-SA 4.0
 """Level 1: Heart. Equals, text vs. numbers. Doubles as the tour of the site."""
 import random
 from levelkit import Grid, FID, write_layer, region_grid, attr, req, q
@@ -50,9 +50,9 @@ def build():
             {"event": "values", "target": ".field[data-field='land_use'] .fvals",
              "text": "Click <b>values</b> next to the <code>land_use</code> field to list every value stored in it. Click a value to drop it into the query box. (Number fields show their range instead.)"},
             {"event": "run", "target": "#run",
-             "text": "Read the first request in the color key, <b>Cream</b>. Build <code>land_use = 'residential'</code> by clicking the field name, the <code>=</code> button and the value, or type it. Click <b>Run</b>. The parcels that match turn <b style='color:#00a3b0'>cyan</b>: that’s your selection."},
+             "text": "Read the first query in the color key, <b>Cream</b>. Build <code>land_use = 'residential'</code> by clicking the field name, the <code>=</code> button and the value, or type it. Click <b>Run</b>. The parcels that match turn <b style='color:#00a3b0'>cyan</b>: that’s your selection."},
             {"event": "fill", "target": "#fill-color",
-             "text": "In step 2, choose <b>Cream</b> from the gem color menu and click <b>Fill</b>. When every gem for that request is in place, a ✓ appears next to it in the color key."},
+             "text": "In step 2, choose <b>Cream</b> from the gem color menu and click <b>Fill</b>. When every gem for that query is in place, a ✓ appears next to it in the color key."},
             {"event": "complete", "target": None,
              "text": "Now finish <b>Ruby</b> and <b>Blush</b> on your own. Check each field’s type first: <code>floors</code> is a NUMBER, so no quotes. <code>zip</code> looks like a number but is TEXT, so it needs quotes."},
         ],

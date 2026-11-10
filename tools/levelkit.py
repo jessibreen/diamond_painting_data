@@ -133,7 +133,7 @@ def region_grid(filename, grid, key, painting=None):
     empty = [key[k]["name"] for k, n in counts.items() if n == 0]
     if empty:
         print(f"  WARNING {filename}: no gems are painted as {', '.join(empty)}. "
-              "Any request that depends on them will select nothing.")
+              "Any query that depends on them will select nothing.")
     # The level file owns the key (names and preview colors); keep the grid file in step.
     data["key"] = key
     os.makedirs(ART, exist_ok=True)

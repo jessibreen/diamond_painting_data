@@ -327,7 +327,7 @@ function renderCounts() {
   });
   const missing = Object.keys(counts).filter((k) => counts[k] === 0).map((k) => st.data.key[k].name);
   $('checks').innerHTML = `<h3>Check</h3>` + (missing.length
-    ? `<div class="warn">No gems are painted as <b>${missing.map(esc).join(', ')}</b>. A request whose answer is empty will break the level. Paint at least one gem of every region.</div>`
+    ? `<div class="warn">No gems are painted as <b>${missing.map(esc).join(', ')}</b>. A query that selects nothing will break the level. Paint at least one gem of every region.</div>`
     : `<div class="ok">Every region has gems. ${st.data.cols} × ${st.data.rows} = ${st.data.cols * st.data.rows} gems.</div>`);
 }
 

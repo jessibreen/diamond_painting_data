@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Jessica Breen
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Level content (lesson, data design, requests, questions): CC BY-NC-SA 4.0
+# Level content (lesson, data design, color key queries, questions): CC BY-NC-SA 4.0
 """Level 2: Sunset. Comparison operators."""
 import math
 import random
@@ -66,15 +66,15 @@ def build():
         "file": FILE, "grid": f"art/{GRID}", "location": False, "gem_size": grid.gem, "units": "m",
         "lesson": [
             "Not every question is “equals.” Numbers can be compared: <code>&gt;</code> greater than, <code>&lt;</code> less than, <code>&gt;=</code> greater than or equal to, <code>&lt;=</code> less than or equal to, and <code>&lt;&gt;</code> not equal to.",
-            "Watch the edges! <code>pop &gt; 5000</code> leaves out a town of exactly 5000. <code>pop &gt;= 5000</code> includes it. Requests say this in words: “more than,” “at least,” “or higher,” “or less.”",
+            "Watch the edges! <code>pop &gt; 5000</code> leaves out a town of exactly 5000. <code>pop &gt;= 5000</code> includes it. The color key says this in words: “more than,” “at least,” “or higher,” “or less.”",
             "Leave commas out of numbers: write <code>1900</code>, not <code>1,900</code>.",
-            "This table has more fields than you need. Part of the job is figuring out which field answers each request.",
-            "Filling a hex replaces any color already there, like pressing a new gem on top. Work down the color key in order. Some colors are used for more than one request.",
+            "This table has more fields than you need. Part of the job is figuring out which field answers each query.",
+            "Filling a hex replaces any color already there, like pressing a new gem on top. Work down the color key in order. Some colors are used for more than one query.",
         ],
         # Students must answer every question correctly before they can start;
         # add "questions_required": False to a level to make them optional.
         "questions": [
-            q("A request asks for watersheds with a mean elevation of <b>at least</b> 850 m. Which condition matches?",
+            q("You need watersheds with a mean elevation of <b>at least</b> 850 m. Which condition matches?",
               ["<code>mean_elev_m &gt; 850</code>", "<code>mean_elev_m &gt;= 850</code>",
                "<code>mean_elev_m &lt;= 850</code>", "<code>mean_elev_m = 850</code>"],
               1, "“At least” includes 850 itself, so use <code>&gt;=</code>.",

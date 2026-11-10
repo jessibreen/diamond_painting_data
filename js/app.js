@@ -372,7 +372,7 @@ function insert(text, after = '') {
   ta.setSelectionRange(pos, pos);
 }
 
-/** The color key: requests in order, each with its gem color and a ✓ when done. */
+/** The color key: queries in order, each with its gem color and a ✓ when done. */
 function renderPalette() {
   const reqs = state.level.requests;
   const total = reqs.map(() => 0), right = reqs.map(() => 0);
@@ -387,8 +387,9 @@ function renderPalette() {
     return `<li class="${ok ? 'done' : ''}">
       <span class="num">${q + 1}</span>
       <span class="swatch" style="--c:${c.color}" title="${esc(c.name)}"></span>
-      <span class="rule"><span class="name">${esc(c.name)}</span> ${r.rule}</span>
-      <span class="status ${ok ? 'ok' : ''}" title="${ok ? 'Done: every gem for this request is in the right place' : ''}">${ok ? '✓' : ''}</span>
+      <span class="cname">${esc(c.name)}</span>
+      <span class="rule">${r.rule}</span>
+      <span class="status ${ok ? 'ok' : ''}" title="${ok ? 'Done: every gem for this query is in the right place' : ''}">${ok ? '✓' : ''}</span>
     </li>`;
   }).join('');
 }

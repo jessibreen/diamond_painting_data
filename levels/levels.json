@@ -26,12 +26,12 @@
     {
      "event": "run",
      "target": "#run",
-     "text": "Read the first request in the color key, <b>Cream</b>. Build <code>land_use = 'residential'</code> by clicking the field name, the <code>=</code> button and the value, or type it. Click <b>Run</b>. The parcels that match turn <b style='color:#00a3b0'>cyan</b>: that’s your selection."
+     "text": "Read the first query in the color key, <b>Cream</b>. Build <code>land_use = 'residential'</code> by clicking the field name, the <code>=</code> button and the value, or type it. Click <b>Run</b>. The parcels that match turn <b style='color:#00a3b0'>cyan</b>: that’s your selection."
     },
     {
      "event": "fill",
      "target": "#fill-color",
-     "text": "In step 2, choose <b>Cream</b> from the gem color menu and click <b>Fill</b>. When every gem for that request is in place, a ✓ appears next to it in the color key."
+     "text": "In step 2, choose <b>Cream</b> from the gem color menu and click <b>Fill</b>. When every gem for that query is in place, a ✓ appears next to it in the color key."
     },
     {
      "event": "complete",
@@ -164,14 +164,14 @@
    "units": "m",
    "lesson": [
     "Not every question is “equals.” Numbers can be compared: <code>&gt;</code> greater than, <code>&lt;</code> less than, <code>&gt;=</code> greater than or equal to, <code>&lt;=</code> less than or equal to, and <code>&lt;&gt;</code> not equal to.",
-    "Watch the edges! <code>pop &gt; 5000</code> leaves out a town of exactly 5000. <code>pop &gt;= 5000</code> includes it. Requests say this in words: “more than,” “at least,” “or higher,” “or less.”",
+    "Watch the edges! <code>pop &gt; 5000</code> leaves out a town of exactly 5000. <code>pop &gt;= 5000</code> includes it. The color key says this in words: “more than,” “at least,” “or higher,” “or less.”",
     "Leave commas out of numbers: write <code>1900</code>, not <code>1,900</code>.",
-    "This table has more fields than you need. Part of the job is figuring out which field answers each request.",
-    "Filling a hex replaces any color already there, like pressing a new gem on top. Work down the color key in order. Some colors are used for more than one request."
+    "This table has more fields than you need. Part of the job is figuring out which field answers each query.",
+    "Filling a hex replaces any color already there, like pressing a new gem on top. Work down the color key in order. Some colors are used for more than one query."
    ],
    "questions": [
     {
-     "question": "A request asks for watersheds with a mean elevation of <b>at least</b> 850 m. Which condition matches?",
+     "question": "You need watersheds with a mean elevation of <b>at least</b> 850 m. Which condition matches?",
      "options": [
       "<code>mean_elev_m &gt; 850</code>",
       "<code>mean_elev_m &gt;= 850</code>",
@@ -371,7 +371,7 @@
     "Sometimes one condition isn’t enough. <b>AND</b> joins two conditions, and a feature is selected only if <b>both</b> are true.",
     "<code>land_use = 'farm' AND acres &gt; 10</code> selects farms bigger than 10 acres. A small farm fails, and so does a big parking lot.",
     "Each condition needs its own field name: write <code>acres &gt; 10 AND acres &lt; 20</code>, not <code>acres &gt; 10 AND &lt; 20</code>.",
-    "Requests rarely say “AND.” Listen for two facts about the same feature: “forest plots <i>where</i> invasive species were found.”"
+    "The color key rarely says “AND.” Listen for two facts about the same feature: “forest plots <i>where</i> invasive species were found.”"
    ],
    "questions": [
     {
@@ -1460,7 +1460,7 @@
    "lesson": [
     "So far every query made a <b>new selection</b>. The <b>selection type</b> menu lets a query change the selection you already have instead:",
     "<b>Add to the current selection</b> keeps what’s selected and adds the new matches. <b>Remove from the current selection</b> takes the new matches away. <b>Select subset from the current selection</b> keeps only the selected features that also match.",
-    "This is how GIS users build a complicated selection step by step, checking the count after each step. Some of these requests could be written as one query with AND, OR and NOT. Try building them in steps instead."
+    "This is how GIS users build a complicated selection step by step, checking the count after each step. Some of these could be written as a single query with AND, OR and NOT. Try building them in steps instead."
    ],
    "questions": [
     {
@@ -2180,7 +2180,7 @@
    "lesson": [
     "This painting uses everything: comparisons, AND, OR, parentheses, IN, BETWEEN, LIKE, NULL, selection types and Select by Location.",
     "Real datasets rarely have friendly field names. Here they’re short and all caps, like <code>LU_CODE</code> and <code>YR_BLT</code>. Read the field descriptions (the <b>metadata</b>) before you write a query, and click <b>values</b> to see how codes are actually stored.",
-    "Plan each request before you type: which field, which operator, which values? Does it need more than one step?"
+    "Plan each query before you type: which field, which operator, which values? Does it need more than one step?"
    ],
    "questions": [
     {

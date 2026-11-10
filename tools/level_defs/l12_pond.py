@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Jessica Breen
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Level content (lesson, data design, requests, questions): CC BY-NC-SA 4.0
+# Level content (lesson, data design, color key queries, questions): CC BY-NC-SA 4.0
 """Level 12: Pond and trail. Select by Location against other layers:
 intersect, completely within, contain. The picture comes from the
 reference layers' shapes. Placeholder painting."""

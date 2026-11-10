@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Jessica Breen
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Level content (lesson, data design, requests, questions): CC BY-NC-SA 4.0
+# Level content (lesson, data design, color key queries, questions): CC BY-NC-SA 4.0
 """Level 13: Hot air balloon. Capstone: everything, with abbreviated field
 names that send students to the field descriptions (metadata). Placeholder painting."""
 import math
@@ -77,7 +77,7 @@ def build():
         "lesson": [
             "This painting uses everything: comparisons, AND, OR, parentheses, IN, BETWEEN, LIKE, NULL, selection types and Select by Location.",
             "Real datasets rarely have friendly field names. Here they’re short and all caps, like <code>LU_CODE</code> and <code>YR_BLT</code>. Read the field descriptions (the <b>metadata</b>) before you write a query, and click <b>values</b> to see how codes are actually stored.",
-            "Plan each request before you type: which field, which operator, which values? Does it need more than one step?",
+            "Plan each query before you type: which field, which operator, which values? Does it need more than one step?",
         ],
         "questions": [
             q("A field called <code>ASSD_VAL</code> could mean several things. Where should you look to find out?",

@@ -435,3 +435,10 @@ main > .board { grid-area: board; padding-bottom: 4px; }
 
 /* touch screens have no keyboard shortcut to show */
 @media (hover: none) { #run kbd { display: none; } }
+
+/* color key: the gem color sits in its own column, apart from the query wording */
+.palette li { grid-template-columns: 16px 20px 84px 1fr 16px; gap: 8px; }
+.palette .cname { font-size: 12px; font-weight: 500; color: #6a6078; line-height: 1.25;
+  padding-right: 8px; border-right: 1px solid var(--line); align-self: stretch; display: flex; align-items: center; }
+.palette .rule { font-size: 13px; line-height: 1.4; }
+.palette li.done .cname { color: #b0a8bb; }

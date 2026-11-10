@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Jessica Breen
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Level content (lesson, data design, requests, questions): CC BY-NC-SA 4.0
+# Level content (lesson, data design, color key queries, questions): CC BY-NC-SA 4.0
 """Level 3: Toadstools. AND. Painting from art/level03_toadstools.svg (CC0)."""
 import random
 from levelkit import Grid, FID, write_layer, load_art_grid, region_grid, attr, req, q
@@ -47,7 +47,7 @@ def build():
             "Sometimes one condition isn’t enough. <b>AND</b> joins two conditions, and a feature is selected only if <b>both</b> are true.",
             "<code>land_use = 'farm' AND acres &gt; 10</code> selects farms bigger than 10 acres. A small farm fails, and so does a big parking lot.",
             "Each condition needs its own field name: write <code>acres &gt; 10 AND acres &lt; 20</code>, not <code>acres &gt; 10 AND &lt; 20</code>.",
-            "Requests rarely say “AND.” Listen for two facts about the same feature: “forest plots <i>where</i> invasive species were found.”",
+            "The color key rarely says “AND.” Listen for two facts about the same feature: “forest plots <i>where</i> invasive species were found.”",
         ],
         "questions": [
             q("Which plots does <code>habitat = 'forest' AND invasive = 'Y'</code> select?",

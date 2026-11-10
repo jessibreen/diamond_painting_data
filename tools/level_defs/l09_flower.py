@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Jessica Breen
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Level content (lesson, data design, requests, questions): CC BY-NC-SA 4.0
+# Level content (lesson, data design, color key queries, questions): CC BY-NC-SA 4.0
 """Level 9: Flower. Selection types (new, add, remove, subset). Placeholder painting."""
 import math
 import random
@@ -59,7 +59,7 @@ def build():
         "lesson": [
             "So far every query made a <b>new selection</b>. The <b>selection type</b> menu lets a query change the selection you already have instead:",
             "<b>Add to the current selection</b> keeps what’s selected and adds the new matches. <b>Remove from the current selection</b> takes the new matches away. <b>Select subset from the current selection</b> keeps only the selected features that also match.",
-            "This is how GIS users build a complicated selection step by step, checking the count after each step. Some of these requests could be written as one query with AND, OR and NOT. Try building them in steps instead.",
+            "This is how GIS users build a complicated selection step by step, checking the count after each step. Some of these could be written as a single query with AND, OR and NOT. Try building them in steps instead.",
         ],
         "questions": [
             q("All corn fields are selected. You run <code>irrigated = 'Y'</code> with <b>Remove from the current selection</b>. What’s left?",

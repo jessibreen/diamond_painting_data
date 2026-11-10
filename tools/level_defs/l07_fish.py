@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Jessica Breen
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Level content (lesson, data design, requests, questions): CC BY-NC-SA 4.0
+# Level content (lesson, data design, color key queries, questions): CC BY-NC-SA 4.0
 """Level 7: Fish. LIKE and wildcards. Placeholder painting."""
 import random
 from levelkit import Grid, FID, write_layer, region_grid, attr, req, q, ellipse, circle, near_line

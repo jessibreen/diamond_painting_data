@@ -55,7 +55,7 @@ to run `python3 tools/build_levels.py` yourself after every change.) Add `#3` to
 | `js/render.js` | Draws the painting on a canvas |
 | `js/table.js` | The attribute table under the painting (sorting, all/selected, resizing) |
 | `vendor/` | [sql.js](https://github.com/sql-js/sql.js) 1.16 (SQLite compiled for the browser), MIT licensed |
-| `levels/levels.json` | The level list: lessons, questions, fields, color key requests and solutions (generated) |
+| `levels/levels.json` | The level list: lessons, questions, fields, color key queries and their solutions (generated) |
 | `levels/*.geojson` | One file per painting: hex polygons and their attributes, plus extra layers for Level 12 (generated) |
 | `tools/build_levels.py` | Builds everything in `levels/`. Run this after changing a level |
 | `tools/levelkit.py` | Shared helpers: the hex grid, shapes, writing GeoJSON |
@@ -72,16 +72,16 @@ Each level dresses the hex grid up as a different fictional vector dataset
 a one-line `about`, and its `fields`. Every level keeps an `fid` field
 (feature ID), which the app uses to match query results to hexes.
 
-Each level has a list of `colors` and an ordered list of `requests`. A
-request has:
+Each level has a list of `colors` and an ordered list of color key queries
+(stored as `requests`). Each one has:
 
-- `color`: which gem color it is filled with (several requests can share one)
-- `rule`: the plain-English request students see
+- `color`: which gem color it is filled with (several queries can share one)
+- `rule`: the plain-English description students see
 - `solution`: the steps that select the right hexes, for example
   `{"type": "attribute", "where": "habitat = 'forest' AND invasive = 'Y'", "method": "new"}`
   or `{"type": "location", "relation": "touches", "method": "new"}`
 
-In `tools/build_levels.py` you just write each request with its color name
+In each level's file in `tools/level_defs/` you just write each query with its color name
 and hex code, and the script builds the color list for you.
 
 ### Lessons and comprehension questions
@@ -97,7 +97,7 @@ shown when they pick that wrong answer). Students must answer every question cor
 before the Start button unlocks, unless the level sets
 `"questions_required": false`. Level 2 has examples.
 
-When a level loads, the app runs every request's solution in order to work out the
+When a level loads, the app runs every query's solution in order to work out the
 finished picture (the box art). So the solutions are the answer key, and if
 the box art looks right, the level is solvable. Later colors cover earlier
 ones, the same way they do when students paint.
@@ -172,7 +172,7 @@ license.
 **Teaching materials: [CC BY-NC-SA 4.0](LICENSE-CONTENT)**
 ([Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/)).
 The levels and datasets in `levels/`, and the lesson text, comprehension
-questions, color-key requests and painting designs (including where they're
+questions, color key queries and painting designs (including where they're
 written inside `tools/build_levels.py`). You can share and adapt them for
 non-commercial purposes if you give credit and share your version under the
 same license. Please credit them as:
