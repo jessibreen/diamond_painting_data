@@ -586,8 +586,25 @@ function complete() {
   donePainter.draw({ paint: state.paint, colors: colors() });
 }
 
-init().catch((e) => {
+// Right after an update is published, a browser can briefly mix a cached old
+// page with the new scripts (GitHub Pages lets browsers cache files for about
+// 10 minutes). If startup fails, reload once to fetch fresh copies before
+// showing an error.
+const RELOAD_KEY = 'diamond-data-reloaded';
+const session = {
+  get() { try { return sessionStorage.getItem(RELOAD_KEY); } catch { return '1'; } },
+  set() { try { sessionStorage.setItem(RELOAD_KEY, '1'); } catch { /* ignore */ } },
+  clear() { try { sessionStorage.removeItem(RELOAD_KEY); } catch { /* ignore */ } },
+};
+
+init().then(() => session.clear()).catch((e) => {
   console.error(e);
+  if (location.protocol !== 'file:' && !session.get()) {
+    session.set();
+    location.reload();
+    return;
+  }
+  session.clear();
   document.body.insertAdjacentHTML('afterbegin',
-    `<div style="padding:12px;background:#fdecef;color:#7d1830">Diamond Painting with Data couldn't start. If you opened index.html straight from your computer, run it from a local web server instead (see README). Details: ${esc(e.message)}</div>`);
+    `<div style="padding:12px;background:#fdecef;color:#7d1830">Diamond Painting with Data couldn't start. Try a hard refresh (Ctrl+Shift+R, or Cmd+Shift+R on a Mac). If you opened index.html straight from your computer, run it from a local web server instead (see README). Details: ${esc(e.message)}</div>`);
 });
