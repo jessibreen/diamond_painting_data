@@ -442,3 +442,14 @@ main > .board { grid-area: board; padding-bottom: 4px; }
   padding-right: 8px; border-right: 1px solid var(--line); align-self: stretch; display: flex; align-items: center; }
 .palette .rule { font-size: 13px; line-height: 1.4; }
 .palette li.done .cname { color: #b0a8bb; }
+
+/* ------------------------------------------------------------ draggable divider between the two sides */
+main { grid-template-columns: var(--panel-w, minmax(360px, 1fr)) 8px minmax(0, 1.25fr);
+  grid-template-areas: "panel split board" "panel split table"; }
+.col-resizer { grid-area: split; cursor: ew-resize; background: var(--velvet); display: grid; place-items: center;
+  touch-action: none; border-left: 1px solid #3a2d58; }
+.col-resizer span { width: 4px; height: 48px; border-radius: 2px; background: #5b4885; transition: background .15s; }
+.col-resizer:hover span, .col-resizer.dragging span, .col-resizer:focus-visible span { background: #ff9ad5; }
+.col-resizer:focus { outline: none; }
+body.resizing-cols { cursor: ew-resize; user-select: none; }
+@media (max-width: 900px) { .col-resizer { display: none; } }

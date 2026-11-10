@@ -69,6 +69,7 @@ async function init() {
     if (lv && lv.number !== state.level.number) loadLevel(n);
   });
 
+  setupColumnResize();
   new ResizeObserver(() => { if (state.level) { painter.fit(); draw(); } }).observe($('stage'));
   new ResizeObserver(() => { if (state.level) { boxPainter.fit(); boxPainter.draw({ paint: state.target, colors: colors() }); } }).observe(document.querySelector('.boxart-frame'));
 }
@@ -108,10 +109,6 @@ function buildStaticUI() {
   });
   $('undo').addEventListener('click', undo);
   $('start').addEventListener('click', () => {
-    const s = loadStore();
-    s.started = s.started || [];
-    if (!s.started.includes(state.level.number)) s.started.push(state.level.number);
-    saveStore(s);
     showView('work');
   });
   $('back-lesson').addEventListener('click', () => showView('lesson'));
@@ -202,8 +199,9 @@ async function loadLevel(n) {
   $('level-skill').textContent = level.skill;
   renderLesson(level);
   $('work-title').innerHTML = `Level ${level.number}: <b>${esc(level.title)}</b> · ${esc(level.skill)}`;
-  const started = (loadStore().started || []).includes(n);
-  showView(started ? 'work' : 'lesson');     // first visit starts on the lesson
+  // Open on the lesson, unless there's a painting in progress to get back to.
+  const inProgress = state.paint.some((v) => v >= 0) && !state.paint.every((v, i) => v === state.target[i]);
+  showView(inProgress ? 'work' : 'lesson');
   state.focus = -1;
   $('history').innerHTML = '';
   $('history-count').textContent = '';
@@ -257,6 +255,49 @@ function locationResult(source, current, relation, dist) {
 
 const colors = () => state.level.colors.map((c) => c.color);
 
+// ------------------------------------------------------------ divider between the two sides
+const PANEL_KEY = 'diamond-data-panel-width';
+const PANEL_MIN = 320;
+
+function setupColumnResize() {
+  const main = document.querySelector('main');
+  const handle = $('col-resizer');
+  const clamp = (w) => Math.round(Math.max(PANEL_MIN, Math.min(window.innerWidth - 420, w)));
+  const set = (w) => { main.style.setProperty('--panel-w', `${clamp(w)}px`); };
+  const save = () => { try { localStorage.setItem(PANEL_KEY, parseInt(main.style.getPropertyValue('--panel-w'), 10)); } catch { /* ignore */ } };
+  let saved = 0;
+  try { saved = parseInt(localStorage.getItem(PANEL_KEY), 10); } catch { /* ignore */ }
+  if (saved > 0) set(saved);
+
+  const move = (e) => set(e.clientX);
+  const up = () => {
+    handle.classList.remove('dragging');
+    document.body.classList.remove('resizing-cols');
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', up);
+    save();
+  };
+  handle.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    handle.classList.add('dragging');
+    document.body.classList.add('resizing-cols');
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  });
+  handle.addEventListener('dblclick', () => {
+    main.style.removeProperty('--panel-w');
+    try { localStorage.removeItem(PANEL_KEY); } catch { /* ignore */ }
+  });
+  handle.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    set(document.querySelector('.panel').getBoundingClientRect().width + (e.key === 'ArrowRight' ? 30 : -30));
+    save();
+  });
+  // keep a saved width sensible if the window gets smaller
+  window.addEventListener('resize', () => { if (main.style.getPropertyValue('--panel-w')) set(parseInt(main.style.getPropertyValue('--panel-w'), 10)); });
+}
+
 // ------------------------------------------------------------ lesson screen
 function showView(view) {
   $('view-lesson').hidden = view !== 'lesson';
@@ -277,15 +318,26 @@ function renderLesson(level) {
 
   const qs = level.questions || [];
   $('quiz').hidden = !qs.length;
-  state.answered = new Set();
+  // Questions answered on an earlier visit stay answered, so the Start button stays unlocked.
+  const remembered = (loadStore().answered || {})[level.number] || [];
+  state.answered = new Set(remembered.filter((k) => k < qs.length));
   $('quiz-list').innerHTML = qs.map((q, k) => `
     <li data-q="${k}">
       <div class="q-text">${q.question}</div>
       <div class="q-options">${q.options.map((o, j) => `<button type="button" data-o="${j}">${o}</button>`).join('')}</div>
       <div class="q-feedback" hidden></div>
     </li>`).join('');
+  const markRight = (li, q, b) => {
+    b.classList.add('right');
+    li.classList.add('right');
+    const fb = li.querySelector('.q-feedback');
+    fb.hidden = false;
+    fb.className = 'q-feedback good';
+    fb.innerHTML = `<b>Yes!</b> ${q.explain || ''}`;
+  };
   $('quiz-list').querySelectorAll('li').forEach((li) => {
     const q = qs[+li.dataset.q];
+    if (state.answered.has(+li.dataset.q)) markRight(li, q, li.querySelector(`button[data-o="${q.answer}"]`));
     li.querySelector('.q-options').addEventListener('click', (e) => {
       const b = e.target.closest('button');
       if (!b || li.classList.contains('right')) return;
@@ -293,11 +345,12 @@ function renderLesson(level) {
       const fb = li.querySelector('.q-feedback');
       fb.hidden = false;
       if (j === q.answer) {
-        b.classList.add('right');
-        li.classList.add('right');
-        fb.className = 'q-feedback good';
-        fb.innerHTML = `<b>Yes!</b> ${q.explain || ''}`;
+        markRight(li, q, b);
         state.answered.add(+li.dataset.q);
+        const s = loadStore();
+        s.answered = s.answered || {};
+        s.answered[level.number] = [...state.answered];
+        saveStore(s);
         updateStart();
       } else {
         b.classList.add('wrong');
