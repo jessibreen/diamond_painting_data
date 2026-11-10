@@ -151,8 +151,7 @@ export class AttributeTable {
 
     let startY = 0, startH = 0;
     const move = (e) => {
-      const board = this.el.parentElement.getBoundingClientRect();
-      const max = Math.max(120, board.height - 260);       // always leave room for the painting
+      const max = Math.max(120, window.innerHeight - 330);  // always leave room for the painting
       const h = Math.min(max, Math.max(90, startH - (e.clientY - startY)));
       this.el.style.height = `${h}px`;
       this.onResize();

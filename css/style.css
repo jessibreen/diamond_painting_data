@@ -335,3 +335,84 @@ button.big { font-size: 15px; padding: 9px 18px; }
   border-top: 1px solid #3a2d58; text-align: right; }
 .site-footer a { color: #d9c9f5; }
 .site-footer a:hover { color: white; }
+
+/* ------------------------------------------------------------ layout grid
+   Desktop: tools on the left; painting with the attribute table under it on the right. */
+main {
+  grid-template-columns: minmax(360px, 1fr) minmax(0, 1.25fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: "panel board" "panel table";
+}
+main > .panel { grid-area: panel; }
+main > .board { grid-area: board; padding-bottom: 4px; }
+.table-area { grid-area: table; background: var(--velvet); padding: 0 18px 10px; }
+
+/* ------------------------------------------------------------ phones and small tablets */
+@media (max-width: 900px) {
+  html, body { height: auto; }
+  body { display: block; }
+  main { display: flex; flex-direction: column; }
+
+  .topbar { padding: 8px 12px; gap: 8px; }
+  .brand { gap: 8px; }
+  .logo { font-size: 22px; }
+  .brand h1 { font-size: 16px; }
+  .brand p { display: none; }
+  .wip { font-size: 9px; padding: 1px 6px; margin-left: 4px; }
+  #levels { margin-left: 0; width: 100%; flex-wrap: nowrap; overflow-x: auto; padding: 6px 0 2px; scrollbar-width: none; }
+  #levels::-webkit-scrollbar { display: none; }
+  .lvl { flex: none; width: 32px; height: 32px; }
+
+  /* the painting stays pinned at the top while you scroll the tools */
+  main > .board {
+    order: 1; position: sticky; top: 0; z-index: 20; min-height: 0;
+    height: 44vh; height: 44svh; padding: 6px 10px 4px;
+    box-shadow: 0 6px 14px rgba(20, 12, 36, 0.35);
+  }
+  body.on-lesson main > .board { height: 30vh; height: 30svh; }
+  .board-head { align-items: center; gap: 8px; }
+  .board-head .eyebrow { display: none; }
+  .board-head h2 { font-size: 17px; margin: 0; }
+  .skill { font-size: 11px; padding: 1px 8px; }
+  .boxart-frame { width: 54px; height: 48px; padding: 2px; border-width: 2px; }
+  .boxart figcaption { display: none; }
+  .stage { min-height: 0; padding: 4px 0; }
+  .board-bar { gap: 6px; }
+  .board-bar .count { font-size: 13px; }
+  .board-bar button { font-size: 12px; padding: 4px 8px; }
+
+  main > .panel { order: 2; overflow: visible; padding: 10px; }
+  .table-area { order: 3; padding: 0 10px 12px; }
+  .table-resizer { display: none; }
+  .attr-table { height: 300px !important; margin-top: 4px; }
+  .attr-table.collapsed { height: auto !important; }
+
+  /* 16px text stops iPhones zooming in on the query box and menus */
+  #sql, select, input { font-size: 16px !important; }
+  .run-row { flex-wrap: wrap; }
+  .run-row select { flex: 1 1 160px; }
+  .fill-row { flex-wrap: wrap; }
+  .fill-row select { flex: 1 1 150px; }
+  .step-head { flex-wrap: wrap; }
+  .layer-info small { display: none; }
+  .field .fabout { display: none; }
+  .field { grid-template-columns: auto auto 1fr auto; }
+  .start-row { bottom: 0; margin: 0 -10px; background: var(--paper); border-top: 1px solid var(--line); padding: 8px 12px; }
+  .start-row span { font-size: 12px; }
+  button.big { white-space: nowrap; font-size: 14px; padding: 8px 14px; }
+  .site-footer { text-align: center; }
+  .done-art { width: min(300px, 78vw); height: min(270px, 70vw); }
+  dialog#done { max-width: 92vw; padding: 18px; }
+}
+.work-bar button { white-space: nowrap; flex: none; }
+
+/* swatches: a thin outline so light colors (White, Ivory) show up on white cards */
+.swatch { position: relative; background: rgba(42, 35, 51, 0.45); box-shadow: none; }
+.swatch::after { content: ""; position: absolute; inset: 1.5px; background: var(--c, transparent);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+.swatch.empty { background: rgba(42, 35, 51, 0.25); }
+.swatch.empty::after { background: repeating-linear-gradient(45deg, #eee, #eee 4px, #fff 4px, #fff 8px); }
+
+@media (max-width: 900px) {
+  .field .fvals, .field .frange { grid-column: -2 / -1; justify-self: end; }
+}

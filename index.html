@@ -42,21 +42,6 @@
         <button id="undo" class="ghost" disabled>Undo</button>
         <button id="reset" class="ghost">Start over</button>
       </div>
-      <div class="table-resizer" id="table-resizer" role="separator" aria-orientation="horizontal"
-        tabindex="0" title="Drag to resize the attribute table"><span></span></div>
-      <section class="attr-table" id="attr-table" aria-label="Attribute table">
-        <div class="at-bar">
-          <b>Attribute table</b> <code id="at-layer"></code>
-          <span class="at-count" id="at-count"></span>
-          <span class="seg" id="at-show" role="group" aria-label="Rows to show">
-            <button type="button" data-show="all" class="on">All</button><button type="button" data-show="sel">Selected</button>
-          </span>
-          <span class="spacer"></span>
-          <button type="button" id="at-toggle" class="ghost small">Hide</button>
-        </div>
-        <div class="at-note" id="at-note"></div>
-        <div class="at-scroll" id="at-scroll"><table id="at"></table></div>
-      </section>
     </section>
 
     <aside class="panel">
@@ -163,6 +148,24 @@
       </details>
       </section>
     </aside>
+
+    <section class="table-area">
+        <div class="table-resizer" id="table-resizer" role="separator" aria-orientation="horizontal"
+          tabindex="0" title="Drag to resize the attribute table"><span></span></div>
+        <section class="attr-table" id="attr-table" aria-label="Attribute table">
+          <div class="at-bar">
+            <b>Attribute table</b> <code id="at-layer"></code>
+            <span class="at-count" id="at-count"></span>
+            <span class="seg" id="at-show" role="group" aria-label="Rows to show">
+              <button type="button" data-show="all" class="on">All</button><button type="button" data-show="sel">Selected</button>
+            </span>
+            <span class="spacer"></span>
+            <button type="button" id="at-toggle" class="ghost small">Hide</button>
+          </div>
+          <div class="at-note" id="at-note"></div>
+          <div class="at-scroll" id="at-scroll"><table id="at"></table></div>
+        </section>
+    </section>
   </main>
 
   <footer class="site-footer">

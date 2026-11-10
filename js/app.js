@@ -67,6 +67,7 @@ async function init() {
   });
 
   new ResizeObserver(() => { if (state.level) { painter.fit(); draw(); } }).observe($('stage'));
+  new ResizeObserver(() => { if (state.level) { boxPainter.fit(); boxPainter.draw({ paint: state.target, colors: colors() }); } }).observe(document.querySelector('.boxart-frame'));
 }
 
 function buildStaticUI() {
@@ -240,6 +241,8 @@ function showView(view) {
   $('view-lesson').hidden = view !== 'lesson';
   $('view-work').hidden = view !== 'work';
   document.querySelector('.panel').scrollTop = 0;
+  document.body.classList.toggle('on-lesson', view === 'lesson');
+  if (window.matchMedia('(max-width: 900px)').matches) window.scrollTo(0, 0);
   if (view === 'work') renderTour(); else document.querySelectorAll('.pulse').forEach((el) => el.classList.remove('pulse'));
 }
 
@@ -362,7 +365,7 @@ function renderPalette() {
     const ok = total[q] > 0 && right[q] === total[q];
     return `<li class="${ok ? 'done' : ''}">
       <span class="num">${q + 1}</span>
-      <span class="swatch" style="background:${c.color}" title="${esc(c.name)}"></span>
+      <span class="swatch" style="--c:${c.color}" title="${esc(c.name)}"></span>
       <span class="rule"><span class="name">${esc(c.name)}</span> ${r.rule}</span>
       <span class="status ${ok ? 'ok' : ''}" title="${ok ? 'Done: every gem for this request is in the right place' : ''}">${ok ? '✓' : ''}</span>
     </li>`;
@@ -379,7 +382,7 @@ function renderFillControls() {
   const n = state.selection.size;
   const sw = $('fill-swatch');
   sw.classList.toggle('empty', k === '');
-  sw.style.background = k === '' ? '' : state.level.colors[+k].color;
+  sw.style.setProperty('--c', k === '' ? 'transparent' : state.level.colors[+k].color);
   $('fill').disabled = !n || k === '';
   $('fill').textContent = n ? `Fill ${n} feature${n === 1 ? '' : 's'}` : 'Fill';
   $('fill-hint').textContent = !n ? 'Select some features first' : k === '' ? 'Now choose a color' : '';
