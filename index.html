@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<!-- SPDX-FileCopyrightText: 2026 Jessica Breen -->
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diamond Painting with Data · learn GIS queries one gem at a time</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">◆</span>
+      <div>
+        <h1>Diamond Painting with Data <span class="wip" title="This tool is still being built and tested. Things may change or break, and feedback is welcome.">Work in progress</span></h1>
+        <p>Learn GIS queries one gem at a time</p>
+      </div>
+    </div>
+    <nav id="levels" aria-label="Levels"></nav>
+  </header>
+
+  <main>
+    <section class="board">
+      <div class="board-head">
+        <div>
+          <span class="eyebrow" id="level-num">Level</span>
+          <h2 id="level-title">Loading…</h2>
+          <span class="skill" id="level-skill"></span>
+        </div>
+        <figure class="boxart" title="The finished picture, like the photo on a kit's box">
+          <div class="boxart-frame"><canvas id="boxart"></canvas></div>
+          <figcaption>Box art</figcaption>
+        </figure>
+      </div>
+      <div class="stage" id="stage"><canvas id="painting" aria-label="Painting canvas"></canvas></div>
+      <div class="board-bar">
+        <span class="count"><b id="sel-count">0</b> selected</span>
+        <span class="spacer"></span>
+        <button id="check" class="ghost">Check my work</button>
+        <button id="undo" class="ghost" disabled>Undo</button>
+        <button id="reset" class="ghost">Start over</button>
+      </div>
+      <div class="table-resizer" id="table-resizer" role="separator" aria-orientation="horizontal"
+        tabindex="0" title="Drag to resize the attribute table"><span></span></div>
+      <section class="attr-table" id="attr-table" aria-label="Attribute table">
+        <div class="at-bar">
+          <b>Attribute table</b> <code id="at-layer"></code>
+          <span class="at-count" id="at-count"></span>
+          <span class="seg" id="at-show" role="group" aria-label="Rows to show">
+            <button type="button" data-show="all" class="on">All</button><button type="button" data-show="sel">Selected</button>
+          </span>
+          <span class="spacer"></span>
+          <button type="button" id="at-toggle" class="ghost small">Hide</button>
+        </div>
+        <div class="at-note" id="at-note"></div>
+        <div class="at-scroll" id="at-scroll"><table id="at"></table></div>
+      </section>
+    </section>
+
+    <aside class="panel">
+      <!-- Screen 1: the lesson (and optional questions) -->
+      <section id="view-lesson" class="view">
+        <section class="card lesson-card">
+          <span class="eyebrow-dark" id="lesson-eyebrow">Lesson</span>
+          <h2 id="lesson-title">Lesson</h2>
+          <div id="lesson-body"></div>
+        </section>
+        <section class="card dataset-card" id="dataset-card"></section>
+        <section class="card quiz" id="quiz" hidden>
+          <h3>Check your understanding</h3>
+          <ol id="quiz-list"></ol>
+        </section>
+        <div class="start-row">
+          <span id="start-hint"></span>
+          <button id="start" class="primary big">Start the painting →</button>
+        </div>
+      </section>
+
+      <!-- Screen 2: the color key and query tools -->
+      <section id="view-work" class="view" hidden>
+      <div class="work-bar">
+        <button id="back-lesson" class="ghost small">← Lesson</button>
+        <span id="work-title"></span>
+      </div>
+
+      <details id="tour" class="card tour" open hidden>
+        <summary>How it works</summary>
+        <ol id="tour-steps"></ol>
+        <p class="tour-tips"><b>Also handy:</b> <i>Check my work</i> marks wrong gems with ✕. <i>Undo</i> steps back.
+          Click a query in <i>History</i> to reuse it. The <i>box art</i> shows the finished painting.</p>
+      </details>
+
+      <section class="card">
+        <h3>Color key <small>Do the requests in order. Some colors are used more than once.</small></h3>
+        <ol id="palette" class="palette"></ol>
+      </section>
+
+      <section class="card tool">
+        <div class="step-head">
+          <h3 class="step-title"><span class="step-num">1</span> Select features</h3>
+          <div class="tabs" role="tablist">
+            <button role="tab" data-tab="attr" class="active">By Attributes</button>
+            <button role="tab" data-tab="loc" id="tab-loc-btn">By Location</button>
+          </div>
+        </div>
+
+        <div id="tab-attr" class="tab-body">
+          <div class="layer-info" id="layer-info"></div>
+          <div id="fields" class="fields"></div>
+          <div id="ops" class="ops"></div>
+          <div class="sql-head">
+            <label class="sql-prefix" for="sql">SELECT * FROM <span id="table-name">features</span> WHERE</label>
+            <button type="button" id="clear-sql" class="ghost small" title="Empty the query box">Clear query</button>
+          </div>
+          <textarea id="sql" rows="2" spellcheck="false" autocomplete="off" autocapitalize="off"
+            placeholder="Type a condition, like field = 'value'"></textarea>
+        </div>
+
+        <div id="tab-loc" class="tab-body" hidden>
+          <label class="form-row">Input features
+            <select disabled><option class="layer-name">features</option></select></label>
+          <label class="form-row">Relationship
+            <select id="relation">
+              <option value="intersects">Intersect</option>
+              <option value="touches">Boundary touches</option>
+              <option value="distance">Within a distance</option>
+            </select></label>
+          <label class="form-row">Selecting features
+            <select disabled><option id="selecting-layer">features (selected features only)</option></select></label>
+          <label class="form-row" id="dist-row" hidden>Search distance
+            <span><input id="distance" type="number" value="2.5" min="0" step="0.5"> mm</span></label>
+          <p class="hint">One gem is 2.5 mm across. Distances are measured edge to edge.</p>
+        </div>
+
+        <div class="run-row">
+          <label for="method">Selection type</label>
+          <select id="method">
+            <option value="new">New selection</option>
+            <option value="add">Add to the current selection</option>
+            <option value="remove">Remove from the current selection</option>
+            <option value="subset">Select subset from the current selection</option>
+          </select>
+          <button id="run" class="primary">Run <kbd>Ctrl ↵</kbd></button>
+        </div>
+        <div id="message" class="message" hidden></div>
+
+        <div class="fill-step">
+          <h3 class="step-title"><span class="step-num">2</span> Fill the selection <small id="fill-hint"></small></h3>
+          <div class="fill-row">
+            <span class="swatch big" id="fill-swatch"></span>
+            <select id="fill-color" aria-label="Gem color"></select>
+            <button id="fill" class="primary">Fill</button>
+            <button id="clear-sel" class="ghost">Clear selection</button>
+          </div>
+        </div>
+      </section>
+
+      <details class="card history-card">
+        <summary>History <small id="history-count"></small> <small class="sub">click a query to reuse it</small></summary>
+        <ol id="history" class="history"></ol>
+      </details>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 Jessica Breen ·
+    Code: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="license noopener">GPL-3.0</a> ·
+    Materials: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a>
+  </footer>
+
+  <dialog id="done">
+    <div class="done-art"><canvas id="done-canvas"></canvas></div>
+    <h2>Painting complete! ✨</h2>
+    <p id="done-text"></p>
+    <div class="done-actions">
+      <button id="done-close" class="ghost">Admire it</button>
+      <button id="done-next" class="primary">Next level</button>
+    </div>
+  </dialog>
+
+  <script src="vendor/sql-wasm.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

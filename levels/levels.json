@@ -1,0 +1,670 @@
+{
+ "units": "mm",
+ "gem_size": 2.5,
+ "levels": [
+  {
+   "number": 1,
+   "title": "Heart",
+   "skill": "Equals ( = ), text vs. numbers",
+   "dataset": "City parcels",
+   "table": "parcels",
+   "about": "Property parcels in a small city, one row per parcel.",
+   "file": "level01_heart.geojson",
+   "location": false,
+   "tutorial": [
+    {
+     "event": "identify",
+     "target": "#painting",
+     "text": "<b>Click any hex</b> in the painting. Each hex represents a <b>feature</b>, here a property parcel. Its row lights up in the <b>attribute table</b> under the painting, which lists every feature and its fields. Drag the bar above the table to make it bigger or smaller."
+    },
+    {
+     "event": "values",
+     "target": ".field[data-field='land_use'] .fvals",
+     "text": "Click <b>values</b> next to the <code>land_use</code> field to list every value stored in it. Click a value to drop it into the query box. (Number fields show their range instead.)"
+    },
+    {
+     "event": "run",
+     "target": "#run",
+     "text": "Read the first request in the color key, <b>Cream</b>. Build <code>land_use = 'residential'</code> by clicking the field name, the <code>=</code> button and the value, or type it. Click <b>Run</b>. The parcels that match turn <b style='color:#00a3b0'>cyan</b>: that’s your selection."
+    },
+    {
+     "event": "fill",
+     "target": "#fill-color",
+     "text": "In step 2, choose <b>Cream</b> from the gem color menu and click <b>Fill</b>. When every gem for that request is in place, a ✓ appears next to it in the color key."
+    },
+    {
+     "event": "complete",
+     "target": null,
+     "text": "Now finish <b>Ruby</b> and <b>Blush</b> on your own. Check each field’s type first: <code>floors</code> is a NUMBER, so no quotes. <code>zip</code> looks like a number but is TEXT, so it needs quotes."
+    }
+   ],
+   "lesson": [
+    "Every hex in the painting is a <b>feature</b>, and every feature has <b>attributes</b>: values stored in <b>fields</b>. Together they make the layer’s <b>attribute table</b>.",
+    "A query is a yes/no question asked of every feature. The ones that answer <i>yes</i> get <b>selected</b>.",
+    "To ask “is this field equal to this value?” write <code>field = value</code>. Numbers are written plain: <code>acres = 12</code>. Text goes inside <b>single quotes</b>: <code>county = 'Kent'</code>.",
+    "Look at each field’s <b>type</b>. Codes that look like numbers, like ZIP codes or phone numbers, are stored as <b>TEXT</b> because you never do math with them. A number field would also drop the leading zero in <code>'02134'</code>."
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "land_use",
+     "type": "TEXT",
+     "about": "What the parcel is used for"
+    },
+    {
+     "name": "zip",
+     "type": "TEXT",
+     "about": "Five-digit ZIP code"
+    },
+    {
+     "name": "floors",
+     "type": "INTEGER",
+     "about": "Number of stories in the building on the parcel"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Every <b>residential</b> parcel",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "land_use = 'residential'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "Every parcel with a <b>one-story</b> building",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "floors = 1",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "Every parcel in ZIP code <b>02139</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "zip = '02139'",
+       "method": "new"
+      }
+     ]
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Cream",
+     "color": "#f4e4c1"
+    },
+    {
+     "name": "Ruby",
+     "color": "#c8102e"
+    },
+    {
+     "name": "Blush",
+     "color": "#f7a1b5"
+    }
+   ]
+  },
+  {
+   "number": 2,
+   "title": "Sunset",
+   "skill": "Comparisons ( >, <, >=, <=, <> )",
+   "questions": [
+    {
+     "question": "A request asks for watersheds with a mean elevation of <b>at least</b> 850 m. Which condition matches?",
+     "options": [
+      "<code>mean_elev_m &gt; 850</code>",
+      "<code>mean_elev_m &gt;= 850</code>",
+      "<code>mean_elev_m &lt;= 850</code>",
+      "<code>mean_elev_m = 850</code>"
+     ],
+     "answer": 1,
+     "explain": "“At least” includes 850 itself, so use <code>&gt;=</code>.",
+     "hints": [
+      "<code>&gt;</code> leaves out a watershed at exactly 850 m.",
+      null,
+      "<code>&lt;=</code> picks 850 and everything <i>below</i> it.",
+      "<code>=</code> only picks watersheds at exactly 850 m."
+     ]
+    },
+    {
+     "question": "Which condition is written correctly?",
+     "options": [
+      "<code>pop =&gt; 5000</code>",
+      "<code>pop &gt;= 5,000</code>",
+      "<code>pop &gt;= 5000</code>",
+      "<code>pop &gt;= '5000'</code>"
+     ],
+     "answer": 2,
+     "explain": "The <code>&gt;</code> comes before the <code>=</code>, and the number has no comma or quotes.",
+     "hints": [
+      "SQL writes it <code>&gt;=</code>, with the <code>&gt;</code> first.",
+      "Leave the comma out of numbers.",
+      null,
+      "<code>pop</code> is a number, so its values don’t get quotes."
+     ]
+    },
+    {
+     "question": "Which watersheds does <code>mean_elev_m &lt;&gt; 400</code> select?",
+     "options": [
+      "Only watersheds at exactly 400 m",
+      "Every watershed except those at exactly 400 m",
+      "Watersheds below 400 m",
+      "Watersheds above 400 m"
+     ],
+     "answer": 1,
+     "explain": "<code>&lt;&gt;</code> means “not equal to,” so it keeps everything above <i>and</i> below 400 m.",
+     "hints": [
+      "That would be <code>= 400</code>.",
+      null,
+      "<code>&lt;&gt;</code> isn’t “less than”: it means “not equal to.” What about watersheds above 400 m?",
+      "<code>&lt;&gt;</code> isn’t “greater than”: it means “not equal to.” What about watersheds below 400 m?"
+     ]
+    }
+   ],
+   "dataset": "Mountain sub-watersheds",
+   "table": "watersheds",
+   "about": "Small watersheds across a mountain range, one polygon per watershed.",
+   "file": "level02_sunset.geojson",
+   "location": false,
+   "lesson": [
+    "Not every question is “equals.” Numbers can be compared: <code>&gt;</code> greater than, <code>&lt;</code> less than, <code>&gt;=</code> greater than or equal to, <code>&lt;=</code> less than or equal to, and <code>&lt;&gt;</code> not equal to.",
+    "Watch the edges! <code>pop &gt; 5000</code> leaves out a town of exactly 5000. <code>pop &gt;= 5000</code> includes it. Requests say this in words: “more than,” “at least,” “or higher,” “or less.”",
+    "Leave commas out of numbers: write <code>1900</code>, not <code>1,900</code>.",
+    "This table has more fields than you need. Part of the job is figuring out which field answers each request.",
+    "Filling a hex replaces any color already there, like pressing a new gem on top. Work down the color key in order. Some colors are used for more than one request."
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "huc12",
+     "type": "TEXT",
+     "about": "12-digit hydrologic unit code that identifies the watershed"
+    },
+    {
+     "name": "mean_elev_m",
+     "type": "INTEGER",
+     "about": "Average elevation of the watershed, in meters"
+    },
+    {
+     "name": "solar_kwh",
+     "type": "INTEGER",
+     "about": "Average sunlight received per year, in kWh per square meter"
+    },
+    {
+     "name": "fog_days",
+     "type": "INTEGER",
+     "about": "Days with fog recorded last year"
+    },
+    {
+     "name": "precip_mm",
+     "type": "INTEGER",
+     "about": "Precipitation last year, in millimeters"
+    },
+    {
+     "name": "area_km2",
+     "type": "REAL",
+     "about": "Area of the watershed, in square kilometers"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Watersheds with a mean elevation <b>above 400 m</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "mean_elev_m > 400",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "Watersheds with a mean elevation <b>above 620 m</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "mean_elev_m > 620",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "Watersheds with a mean elevation of <b>850 m or higher</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "mean_elev_m >= 850",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 3,
+     "rule": "Watersheds that receive <b>at least 1,900 kWh/m²</b> of sunlight a year",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "solar_kwh >= 1900",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 4,
+     "rule": "Watersheds with a mean elevation of <b>400 m or lower</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "mean_elev_m <= 400",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 0,
+     "rule": "Watersheds that recorded <b>any</b> fog days last year",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "fog_days <> 0",
+       "method": "new"
+      }
+     ]
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Tangerine",
+     "color": "#f6872b"
+    },
+    {
+     "name": "Rose",
+     "color": "#e0457b"
+    },
+    {
+     "name": "Plum",
+     "color": "#5b2a6e"
+    },
+    {
+     "name": "Gold",
+     "color": "#ffd23f"
+    },
+    {
+     "name": "Navy",
+     "color": "#1d2f5e"
+    }
+   ]
+  },
+  {
+   "number": 3,
+   "title": "Mushroom",
+   "skill": "AND",
+   "dataset": "Vegetation survey plots",
+   "table": "plots",
+   "about": "Field survey plots from a vegetation study, one row per plot.",
+   "file": "level03_mushroom.geojson",
+   "location": false,
+   "lesson": [
+    "Sometimes one condition isn’t enough. <b>AND</b> joins two conditions, and a feature is selected only if <b>both</b> are true.",
+    "<code>land_use = 'farm' AND acres &gt; 10</code> selects farms bigger than 10 acres. A small farm fails, and so does a big parking lot.",
+    "Each condition needs its own field name: write <code>acres &gt; 10 AND acres &lt; 20</code>, not <code>acres &gt; 10 AND &lt; 20</code>.",
+    "Requests rarely say “AND.” Listen for two facts about the same feature: “forest plots <i>where</i> invasive species were found.”"
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "plot_id",
+     "type": "TEXT",
+     "about": "Survey plot code"
+    },
+    {
+     "name": "habitat",
+     "type": "TEXT",
+     "about": "Habitat type of the plot"
+    },
+    {
+     "name": "invasive",
+     "type": "TEXT",
+     "about": "Were invasive species found? Y or N"
+    },
+    {
+     "name": "elev_m",
+     "type": "INTEGER",
+     "about": "Elevation of the plot, in meters"
+    },
+    {
+     "name": "canopy_pct",
+     "type": "INTEGER",
+     "about": "Percent of the plot shaded by tree canopy"
+    },
+    {
+     "name": "survey_yr",
+     "type": "INTEGER",
+     "about": "Year the plot was last surveyed"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Every <b>upland</b> plot",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "habitat = 'upland'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "<b>Meadow</b> plots with <b>no</b> invasive species",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "habitat = 'meadow' AND invasive = 'N'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "<b>Meadow</b> plots where invasive species <b>were found</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "habitat = 'meadow' AND invasive = 'Y'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 3,
+     "rule": "Every <b>wetland</b> plot",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "habitat = 'wetland'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 4,
+     "rule": "<b>Forest</b> plots with <b>no</b> invasive species",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "habitat = 'forest' AND invasive = 'N'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "<b>Forest</b> plots where invasive species <b>were found</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "habitat = 'forest' AND invasive = 'Y'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 5,
+     "rule": "<b>Forest</b> plots at <b>170 m elevation or lower</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "habitat = 'forest' AND elev_m <= 170",
+       "method": "new"
+      }
+     ]
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Powder Blue",
+     "color": "#a8dcf0"
+    },
+    {
+     "name": "Moss Green",
+     "color": "#4f9a3a"
+    },
+    {
+     "name": "White",
+     "color": "#ffffff"
+    },
+    {
+     "name": "Ivory",
+     "color": "#f3ead3"
+    },
+    {
+     "name": "Scarlet",
+     "color": "#d62828"
+    },
+    {
+     "name": "Tan",
+     "color": "#c9a27e"
+    }
+   ]
+  },
+  {
+   "number": 4,
+   "title": "Rainbow",
+   "skill": "OR (and the “= 'a' OR 'b'” trap)",
+   "available": false
+  },
+  {
+   "number": 5,
+   "title": "Butterfly",
+   "skill": "Parentheses: mixing AND and OR",
+   "available": false
+  },
+  {
+   "number": 6,
+   "title": "Cactus",
+   "skill": "NOT, IN, BETWEEN",
+   "available": false
+  },
+  {
+   "number": 7,
+   "title": "Fish",
+   "skill": "LIKE and wildcards",
+   "available": false
+  },
+  {
+   "number": 8,
+   "title": "Night sky",
+   "skill": "NULL (the “= NULL” trap)",
+   "available": false
+  },
+  {
+   "number": 9,
+   "title": "Hollow flower",
+   "skill": "Selection methods",
+   "available": false
+  },
+  {
+   "number": 10,
+   "title": "Outlined cat",
+   "skill": "Select by Location: touches & intersects",
+   "dataset": "Land ownership around Pine Ridge State Forest",
+   "table": "ownership",
+   "about": "Land parcels in and around a state forest, one polygon per parcel.",
+   "file": "level10_cat.geojson",
+   "location": true,
+   "lesson": [
+    "Attribute queries ask about a feature’s <b>values</b>. <b>Select by Location</b> asks where a feature is <b>in relation to other features</b>.",
+    "Here the parcels are compared with the parcels you’ve <b>already selected</b>. <b>Boundary touches</b> picks parcels whose boundaries touch a selected parcel. <b>Intersect</b> picks parcels that share any area or boundary, so it also picks the selected parcels themselves.",
+    "Combine tools with the <b>selection type</b>: <i>new</i> replaces the selection, <i>add to</i> adds, <i>remove from</i> takes away, and <i>select subset</i> keeps only the parcels that pass the new test too.",
+    "Nothing in the attribute table says which parcels are next to the forest. Some questions can only be answered by location!"
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "parcel_id",
+     "type": "TEXT",
+     "about": "Assessor's parcel number (map-lot)"
+    },
+    {
+     "name": "owner_type",
+     "type": "TEXT",
+     "about": "What kind of owner holds the parcel"
+    },
+    {
+     "name": "acres",
+     "type": "REAL",
+     "about": "Parcel area, in acres"
+    },
+    {
+     "name": "zoning",
+     "type": "TEXT",
+     "about": "Zoning district code"
+    },
+    {
+     "name": "deed_yr",
+     "type": "INTEGER",
+     "about": "Year of the most recent deed"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Every <b>privately owned</b> parcel",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "owner_type = 'private'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "Every parcel in the <b>state forest</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "owner_type = 'state forest'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "Parcels owned by the <b>water district</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "owner_type = 'water district'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 3,
+     "rule": "The <b>land trust</b> parcel",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "owner_type = 'land trust'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 4,
+     "rule": "A timber harvest is planned. Every <b>private</b> parcel that <b>shares a boundary</b> with the <b>state forest</b> must be notified. (No field says who borders the forest. Select the forest first, then use Select by Location.)",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "owner_type = 'state forest'",
+       "method": "new"
+      },
+      {
+       "type": "location",
+       "relation": "touches",
+       "method": "new"
+      },
+      {
+       "type": "attribute",
+       "where": "owner_type = 'private'",
+       "method": "subset"
+      }
+     ]
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Lavender",
+     "color": "#d9cdf0"
+    },
+    {
+     "name": "Orange",
+     "color": "#f28c28"
+    },
+    {
+     "name": "Emerald",
+     "color": "#2e9e5b"
+    },
+    {
+     "name": "Pink",
+     "color": "#ff8fab"
+    },
+    {
+     "name": "Black",
+     "color": "#1b1b2f"
+    }
+   ]
+  },
+  {
+   "number": 11,
+   "title": "Glowing moon",
+   "skill": "Within a distance",
+   "available": false
+  },
+  {
+   "number": 12,
+   "title": "Pond and vine",
+   "skill": "Reference layers: within, contains, crossed by",
+   "available": false
+  },
+  {
+   "number": 13,
+   "title": "Capstone",
+   "skill": "Everything",
+   "available": false
+  }
+ ]
+}
