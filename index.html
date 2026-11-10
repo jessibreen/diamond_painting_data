@@ -111,12 +111,15 @@
               <option value="intersects">Intersect</option>
               <option value="touches">Boundary touches</option>
               <option value="distance">Within a distance</option>
+              <option value="within">Are completely within</option>
+              <option value="contains">Completely contain</option>
+              <option value="center_in">Have their center in</option>
             </select></label>
           <label class="form-row">Selecting features
-            <select disabled><option id="selecting-layer">features (selected features only)</option></select></label>
+            <select id="source"></select></label>
           <label class="form-row" id="dist-row" hidden>Search distance
-            <span><input id="distance" type="number" value="2.5" min="0" step="0.5"> mm</span></label>
-          <p class="hint">One gem is 2.5 mm across. Distances are measured edge to edge.</p>
+            <span><input id="distance" type="number" value="100" min="0" step="any"> <span id="dist-unit">m</span></span></label>
+          <p class="hint" id="loc-hint"></p>
         </div>
 
         <div class="run-row">

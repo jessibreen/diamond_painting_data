@@ -116,11 +116,51 @@ export class Painter {
     ctx.fill();
   }
 
+  /** Other layers (pond, trail, springs…) drawn on top so students can see what they're comparing against. */
+  drawReference(ref) {
+    const ctx = this.ctx, lw = Math.max(1.5, this.dpr * 2);
+    ctx.save();
+    for (const g of ref.geoms) {
+      if (g.kind === 'polygon') {
+        ctx.beginPath();
+        g.ring.forEach(([x, y], k) => { const [px, py] = this.toPx(x, y); k ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(25, 118, 210, 0.10)';
+        ctx.fill();
+        ctx.setLineDash([lw * 3, lw * 2]);
+        ctx.lineWidth = lw;
+        ctx.strokeStyle = '#0d47a1';
+        ctx.stroke();
+      } else if (g.kind === 'line') {
+        ctx.beginPath();
+        g.pts.forEach(([x, y], k) => { const [px, py] = this.toPx(x, y); k ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
+        ctx.setLineDash([]);
+        ctx.lineWidth = lw * 1.4;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.stroke();
+        ctx.lineWidth = lw * 0.7;
+        ctx.strokeStyle = '#4e342e';
+        ctx.stroke();
+      } else {
+        const [px, py] = this.toPx(g.pts[0][0], g.pts[0][1]);
+        ctx.beginPath();
+        ctx.arc(px, py, lw * 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = '#e3f2fd';
+        ctx.fill();
+        ctx.setLineDash([]);
+        ctx.lineWidth = lw;
+        ctx.strokeStyle = '#0d47a1';
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
   /**
    * paint: array of palette indexes (-1 = empty); colors: palette colors
    * selection: Set of indexes; wrong: Set of indexes; hover: index
    */
-  draw({ paint, colors, selection = new Set(), wrong = new Set(), hover = -1, focus = -1 }) {
+  draw({ paint, colors, selection = new Set(), wrong = new Set(), hover = -1, focus = -1, refs = [] }) {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.geoms.forEach((g, i) => {
@@ -138,6 +178,7 @@ export class Painter {
         ctx.stroke();
       }
     }
+    for (const ref of refs) this.drawReference(ref);
     if (wrong.size) {
       ctx.lineWidth = Math.max(1, this.dpr * 1.8);
       ctx.strokeStyle = '#ff1f4b';

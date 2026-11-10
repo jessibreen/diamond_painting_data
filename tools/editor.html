@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<!-- SPDX-FileCopyrightText: 2026 Jessica Breen -->
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painting editor · Diamond Painting with Data</title>
+<style>
+  :root { --velvet: #1c1430; --paper: #fbf7f0; --line: #e7dfd2; --ink: #2a2333; --muted: #776d86; --amethyst: #6b3fa0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { display: flex; flex-direction: column; background: var(--paper); }
+  button, select, input { font: inherit; }
+  button { cursor: pointer; border-radius: 8px; padding: 5px 11px; border: 1px solid var(--line); background: #faf7ff; color: var(--ink); }
+  button:disabled { opacity: .45; cursor: default; }
+  button.primary { background: var(--amethyst); border-color: var(--amethyst); color: white; font-weight: 600; }
+  button.on { background: var(--amethyst); border-color: var(--amethyst); color: white; }
+  header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 8px 16px; background: var(--velvet); color: #f4eefc; }
+  header h1 { margin: 0; font: 600 18px Georgia, serif; }
+  header .sub { color: #b9abd6; font-size: 12px; }
+  header select { padding: 4px 8px; border-radius: 6px; }
+  header .spacer { flex: 1; }
+  header button { background: #2a1f42; border-color: #4a3a6e; color: #efe7fb; }
+  header button.primary { background: var(--amethyst); border-color: #c7a8f2; }
+  .dirty { color: #ffd23f; font-size: 12px; }
+  main { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 300px; min-height: 0; }
+  .stage { position: relative; display: flex; align-items: center; justify-content: center; padding: 12px;
+    background: radial-gradient(ellipse at 30% 20%, #2c1f47, var(--velvet) 70%); min-height: 0; }
+  canvas { touch-action: none; cursor: crosshair; box-shadow: 0 14px 34px rgba(0,0,0,.45); border-radius: 4px; }
+  .status { position: absolute; left: 14px; bottom: 10px; font-size: 12px; color: #cbbde6; font-variant-numeric: tabular-nums; }
+  aside { overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .card { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .card h3 { margin: 0 0 8px; font-size: 14px; }
+  .card h3 small { font-weight: 400; color: var(--muted); }
+  .regions { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .regions li { display: grid; grid-template-columns: 18px 24px 1fr auto; gap: 8px; align-items: center; padding: 4px 6px;
+    border-radius: 7px; border: 2px solid transparent; cursor: pointer; font-size: 13px; }
+  .regions li:hover { background: #f6f0fd; }
+  .regions li.active { border-color: var(--amethyst); background: #f3ecfc; }
+  .regions .k { font-size: 11px; color: var(--muted); text-align: right; }
+  .regions .sw { width: 22px; height: 22px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    position: relative; background: rgba(42,35,51,.45); }
+  .regions .sw::after { content: ""; position: absolute; inset: 1.5px; background: var(--c);
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+  .regions .n { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; }
+  .regions .n.zero { color: #c62a47; font-weight: 700; }
+  .row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .hint { font-size: 12px; color: var(--muted); line-height: 1.45; margin: 6px 0 0; }
+  .warn { font-size: 12.5px; background: #fdecef; border: 1px solid #f3c0ca; color: #7d1830; padding: 6px 8px; border-radius: 7px; }
+  .ok { font-size: 12.5px; background: #e9f7ef; border: 1px solid #bfe6cf; color: #145c3c; padding: 6px 8px; border-radius: 7px; }
+  code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; background: #f1ebf8; padding: 0 4px; border-radius: 4px; }
+  ol.steps { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.5; }
+  kbd { font-family: ui-monospace, Menlo, monospace; font-size: 11px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: #fff; }
+  @media (max-width: 800px) { main { grid-template-columns: 1fr; } .stage { min-height: 60vh; } }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Painting editor</h1>
+    <div class="sub">Diamond Painting with Data · for instructors</div>
+  </div>
+  <select id="level" aria-label="Level"></select>
+  <button id="open" title="Open a .grid.json file from your computer">Open file…</button>
+  <span class="spacer"></span>
+  <span class="dirty" id="dirty"></span>
+  <button id="undo" title="Undo (Ctrl+Z)" disabled>Undo</button>
+  <button id="redo" title="Redo (Ctrl+Shift+Z)" disabled>Redo</button>
+  <button id="revert" title="Throw away changes since the last save">Revert</button>
+  <button id="save" class="primary" title="Save the grid file (Ctrl+S)">Save</button>
+  <input type="file" id="file" accept=".json,application/json" hidden>
+</header>
+
+<main>
+  <section class="stage" id="stage">
+    <canvas id="cv"></canvas>
+    <div class="status" id="status"></div>
+  </section>
+
+  <aside>
+    <section class="card">
+      <h3>Regions <small>click one, then paint</small></h3>
+      <ol class="regions" id="regions"></ol>
+      <p class="hint">Each region gets its own attribute values when the level is built, so the queries pick it out. Press <kbd>1</kbd>–<kbd>9</kbd> to switch regions.</p>
+    </section>
+
+    <section class="card">
+      <h3>Tools</h3>
+      <div class="row" id="tools">
+        <button data-tool="brush" class="on" title="Paint gems (B)">Brush</button>
+        <button data-tool="fill" title="Fill a connected area of one region (F)">Fill</button>
+        <button data-tool="pick" title="Pick up a gem's region (I, or right-click)">Pick</button>
+      </div>
+      <div class="row" style="margin-top:8px" id="sizes">
+        <span class="hint" style="margin:0">Brush size</span>
+        <button data-size="0" class="on" title="One gem">1</button>
+        <button data-size="1" title="A gem and its 6 neighbors">7</button>
+        <button data-size="2" title="Two rings of gems">19</button>
+      </div>
+      <label class="row" style="margin-top:8px; font-size:13px"><input type="checkbox" id="lines" checked> Show gem outlines</label>
+      <p class="hint">Right-click a gem to pick up its region. Drag to paint.</p>
+    </section>
+
+    <section class="card" id="checks"></section>
+
+    <section class="card">
+      <h3>When you're done</h3>
+      <ol class="steps">
+        <li>Click <b>Save</b>. In Chrome or Edge, choose the file with the same name in the repo's <code>art/</code> folder to replace it. Other browsers download the file instead; move it into <code>art/</code>.</li>
+        <li>Reload the game. If you started the site with <code>python3 tools/serve.py</code>, it rebuilds the levels for you. Otherwise run <code>python3 tools/build_levels.py</code> first, because the game reads the built files in <code>levels/</code>, not <code>art/</code>.</li>
+        <li>Check the level’s box art.</li>
+      </ol>
+      <p class="hint">Glows and outlines that come from Select by Location (Levels 10, 11, 13) aren’t painted here; they’re worked out from the shapes you paint. Level 12’s picture comes from its pond, trail and spring layers, so it isn’t in this editor.</p>
+    </section>
+  </aside>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const ROW = Math.sqrt(3) / 2;
+
+const st = {
+  levels: [], level: null, data: null, grid: null, saved: null,
+  region: null, tool: 'brush', size: 0, lines: true,
+  undo: [], redo: [], hover: null, painting: false, handles: {},
+};
+
+// ------------------------------------------------------------------ loading
+async function init() {
+  const cat = await (await fetch('../levels/levels.json', { cache: 'no-cache' })).json();
+  st.levels = cat.levels.filter((l) => l.grid);
+  $('level').innerHTML = st.levels.map((l) => `<option value="${l.number}">Level ${l.number}: ${esc(l.title)}</option>`).join('');
+  const want = parseInt(new URLSearchParams(location.search).get('level'), 10);
+  const first = st.levels.find((l) => l.number === want) || st.levels[0];
+  $('level').value = first.number;
+  await loadLevel(first.number);
+  new ResizeObserver(() => { fit(); draw(); }).observe($('stage'));
+}
+
+async function loadLevel(n) {
+  if (dirty() && !confirm('You have unsaved changes. Switch levels anyway?')) { $('level').value = st.level.number; return; }
+  st.level = st.levels.find((l) => l.number === n);
+  const data = await (await fetch(`../${st.level.grid}?t=${Date.now()}`)).json();
+  setData(data);
+  history.replaceState(null, '', `?level=${n}`);
+}
+
+function setData(data) {
+  st.data = data;
+  st.grid = data.grid.map((r) => r.split(''));
+  st.saved = JSON.stringify(st.grid);
+  st.undo = []; st.redo = [];
+  st.region = Object.keys(data.key)[0];
+  renderRegions();
+  fit(); draw(); update();
+}
+
+// ------------------------------------------------------------------ geometry
+// Rows are offset: odd rows sit half a gem to the right.
+function center(col, row) {
+  return [(col + 0.5 + (row % 2 ? 0.5 : 0)) * st.s + st.pad, (row * ROW + 0.5) * st.s + st.pad];
+}
+
+function fit() {
+  if (!st.data) return;
+  const box = $('stage').getBoundingClientRect();
+  const { cols, rows } = st.data;
+  const pad = 2;
+  const s = Math.max(4, Math.min((box.width - 30) / (cols + 0.5), (box.height - 50) / (rows * ROW + 0.6)));
+  const dpr = window.devicePixelRatio || 1;
+  const w = Math.ceil((cols + 0.5) * s + pad * 2), h = Math.ceil((rows * ROW + 0.6) * s + pad * 2);
+  const cv = $('cv');
+  cv.style.width = w + 'px'; cv.style.height = h + 'px';
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  st.s = s; st.pad = pad; st.dpr = dpr;
+}
+
+function hexAt(mx, my) {
+  const { cols, rows } = st.data;
+  const r0 = Math.round(((my - st.pad) / st.s - 0.5) / ROW);
+  let best = null, bd = Infinity;
+  for (let row = r0 - 1; row <= r0 + 1; row++) {
+    if (row < 0 || row >= rows) continue;
+    const c0 = Math.round((mx - st.pad) / st.s - 0.5 - (row % 2 ? 0.5 : 0));
+    for (let col = c0 - 1; col <= c0 + 1; col++) {
+      if (col < 0 || col >= cols) continue;
+      const [x, y] = center(col, row);
+      const d = (x - mx) ** 2 + (y - my) ** 2;
+      if (d < bd) { bd = d; best = [col, row]; }
+    }
+  }
+  return bd <= (st.s * 0.6) ** 2 ? best : null;
+}
+
+function neighbors(col, row) {
+  const odd = row % 2;
+  const d = odd ? [[-1, 0], [1, 0], [0, -1], [1, -1], [0, 1], [1, 1]] : [[-1, 0], [1, 0], [-1, -1], [0, -1], [-1, 1], [0, 1]];
+  return d.map(([dc, dr]) => [col + dc, row + dr])
+    .filter(([c, r]) => c >= 0 && r >= 0 && c < st.data.cols && r < st.data.rows);
+}
+
+// ------------------------------------------------------------------ drawing
+function draw() {
+  if (!st.data) return;
+  const cv = $('cv'), ctx = cv.getContext('2d');
+  ctx.setTransform(st.dpr, 0, 0, st.dpr, 0, 0);
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  const R = st.s / Math.sqrt(3);
+  const hexPath = (x, y, k = 1) => {
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const a = (Math.PI / 180) * (60 * i - 30);
+      const px = x + R * k * Math.cos(a), py = y + R * k * Math.sin(a);
+      i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+    }
+    ctx.closePath();
+  };
+  for (let row = 0; row < st.data.rows; row++) {
+    for (let col = 0; col < st.data.cols; col++) {
+      const [x, y] = center(col, row);
+      hexPath(x, y, st.lines ? 0.95 : 1.02);
+      ctx.fillStyle = st.data.key[st.grid[row][col]].color;
+      ctx.fill();
+    }
+  }
+  if (st.lines) {
+    ctx.lineWidth = 0.6;
+    ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+    for (let row = 0; row < st.data.rows; row++) for (let col = 0; col < st.data.cols; col++) {
+      const [x, y] = center(col, row); hexPath(x, y, 0.95); ctx.stroke();
+    }
+  }
+  // brush preview
+  if (st.hover && st.tool !== 'pick') {
+    const cells = st.tool === 'brush' ? brushCells(...st.hover) : [st.hover];
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#ff4fd8';
+    for (const [c, r] of cells) { const [x, y] = center(c, r); hexPath(x, y, 1); ctx.stroke(); }
+  } else if (st.hover) {
+    const [x, y] = center(...st.hover); hexPath(x, y, 1);
+    ctx.lineWidth = 2; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+  }
+}
+
+// ------------------------------------------------------------------ editing
+function brushCells(col, row) {
+  let ring = [[col, row]];
+  const seen = new Set([`${col},${row}`]);
+  const all = [[col, row]];
+  for (let k = 0; k < st.size; k++) {
+    const next = [];
+    for (const [c, r] of ring) for (const [nc, nr] of neighbors(c, r)) {
+      const key = `${nc},${nr}`;
+      if (!seen.has(key)) { seen.add(key); next.push([nc, nr]); all.push([nc, nr]); }
+    }
+    ring = next;
+  }
+  return all;
+}
+
+function snapshot() {
+  st.undo.push(st.grid.map((r) => r.slice()));
+  if (st.undo.length > 100) st.undo.shift();
+  st.redo = [];
+}
+
+function paintAt(col, row) {
+  let changed = false;
+  for (const [c, r] of brushCells(col, row)) {
+    if (st.grid[r][c] !== st.region) { st.grid[r][c] = st.region; changed = true; }
+  }
+  return changed;
+}
+
+function fillAt(col, row) {
+  const from = st.grid[row][col];
+  if (from === st.region) return false;
+  const stack = [[col, row]];
+  while (stack.length) {
+    const [c, r] = stack.pop();
+    if (st.grid[r][c] !== from) continue;
+    st.grid[r][c] = st.region;
+    for (const n of neighbors(c, r)) if (st.grid[n[1]][n[0]] === from) stack.push(n);
+  }
+  return true;
+}
+
+function pickAt(col, row) {
+  st.region = st.grid[row][col];
+  renderRegions();
+}
+
+function dirty() { return st.grid && JSON.stringify(st.grid) !== st.saved; }
+
+function update() {
+  $('undo').disabled = !st.undo.length;
+  $('redo').disabled = !st.redo.length;
+  $('dirty').textContent = dirty() ? '● Unsaved changes' : '';
+  renderCounts();
+}
+
+function renderRegions() {
+  const keys = Object.keys(st.data.key);
+  $('regions').innerHTML = keys.map((k, i) => {
+    const r = st.data.key[k];
+    return `<li data-k="${esc(k)}" class="${k === st.region ? 'active' : ''}">
+      <span class="k">${i < 9 ? i + 1 : ''}</span>
+      <span class="sw" style="--c:${r.color}"></span>
+      <span>${esc(r.name)}</span>
+      <span class="n" data-count="${esc(k)}"></span></li>`;
+  }).join('');
+  $('regions').querySelectorAll('li').forEach((li) => li.addEventListener('click', () => { st.region = li.dataset.k; renderRegions(); }));
+  renderCounts();
+}
+
+function renderCounts() {
+  const counts = {};
+  for (const k of Object.keys(st.data.key)) counts[k] = 0;
+  for (const row of st.grid) for (const c of row) counts[c]++;
+  document.querySelectorAll('[data-count]').forEach((el) => {
+    const n = counts[el.dataset.count];
+    el.textContent = n;
+    el.classList.toggle('zero', n === 0);
+  });
+  const missing = Object.keys(counts).filter((k) => counts[k] === 0).map((k) => st.data.key[k].name);
+  $('checks').innerHTML = `<h3>Check</h3>` + (missing.length
+    ? `<div class="warn">No gems are painted as <b>${missing.map(esc).join(', ')}</b>. A request whose answer is empty will break the level. Paint at least one gem of every region.</div>`
+    : `<div class="ok">Every region has gems. ${st.data.cols} × ${st.data.rows} = ${st.data.cols * st.data.rows} gems.</div>`);
+}
+
+// ------------------------------------------------------------------ saving
+function serialize() {
+  const meta = {};
+  for (const [k, v] of Object.entries(st.data)) if (k !== 'grid') meta[k] = v;
+  const head = JSON.stringify(meta, null, 1).slice(0, -2);
+  return head + ',\n "grid": [\n  ' + st.grid.map((r) => JSON.stringify(r.join(''))).join(',\n  ') + '\n ]\n}\n';
+}
+
+function fileName() { return st.level ? st.level.grid.split('/').pop() : 'painting.grid.json'; }
+
+async function save() {
+  const text = serialize();
+  if (window.showSaveFilePicker) {
+    try {
+      let handle = st.handles[fileName()];
+      if (!handle) {
+        handle = await window.showSaveFilePicker({
+          suggestedName: fileName(),
+          types: [{ description: 'Gem grid', accept: { 'application/json': ['.json'] } }],
+        });
+        st.handles[fileName()] = handle;
+      }
+      const w = await handle.createWritable();
+      await w.write(text);
+      await w.close();
+      st.saved = JSON.stringify(st.grid);
+      update();
+      flash(`Saved ${handle.name}. Reload the game to see it (run python3 tools/build_levels.py first unless you're using tools/serve.py).`);
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return;
+      console.warn('Saving with the file picker failed, downloading instead', e);
+    }
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  a.download = fileName();
+  a.click();
+  URL.revokeObjectURL(a.href);
+  st.saved = JSON.stringify(st.grid);
+  update();
+  flash(`Downloaded ${fileName()}. Move it into the repo's art/ folder, then run python3 tools/build_levels.py.`);
+}
+
+function flash(msg) {
+  $('status').textContent = msg;
+  clearTimeout(flash.t);
+  flash.t = setTimeout(() => { $('status').textContent = ''; }, 6000);
+}
+
+// ------------------------------------------------------------------ events
+function bind() {
+  const cv = $('cv');
+  const pos = (e) => { const r = cv.getBoundingClientRect(); return hexAt(e.clientX - r.left, e.clientY - r.top); };
+
+  cv.addEventListener('contextmenu', (e) => e.preventDefault());
+  cv.addEventListener('pointerdown', (e) => {
+    const h = pos(e);
+    if (!h) return;
+    if (e.button === 2 || e.altKey || st.tool === 'pick') { pickAt(...h); return; }
+    snapshot();
+    let changed;
+    if (st.tool === 'fill') changed = fillAt(...h);
+    else { changed = paintAt(...h); st.painting = true; cv.setPointerCapture(e.pointerId); }
+    if (!changed && st.tool === 'fill') st.undo.pop();
+    draw(); update();
+  });
+  cv.addEventListener('pointermove', (e) => {
+    const h = pos(e);
+    st.hover = h;
+    if (st.painting && h) paintAt(...h);
+    $('status').textContent = h ? `column ${h[0]}, row ${h[1]} · ${st.data.key[st.grid[h[1]][h[0]]].name}` : '';
+    draw();
+  });
+  const stop = () => { if (st.painting) { st.painting = false; if (JSON.stringify(st.undo[st.undo.length - 1]) === JSON.stringify(st.grid)) st.undo.pop(); update(); } };
+  cv.addEventListener('pointerup', stop);
+  cv.addEventListener('pointercancel', stop);
+  cv.addEventListener('pointerleave', () => { st.hover = null; draw(); });
+
+  $('tools').addEventListener('click', (e) => {
+    const t = e.target.dataset.tool; if (!t) return;
+    st.tool = t;
+    document.querySelectorAll('#tools button').forEach((b) => b.classList.toggle('on', b.dataset.tool === t));
+  });
+  $('sizes').addEventListener('click', (e) => {
+    const s = e.target.dataset.size; if (s === undefined) return;
+    st.size = +s;
+    document.querySelectorAll('#sizes button').forEach((b) => b.classList.toggle('on', b.dataset.size === s));
+  });
+  $('lines').addEventListener('change', () => { st.lines = $('lines').checked; draw(); });
+  $('level').addEventListener('change', () => loadLevel(+$('level').value));
+  $('undo').addEventListener('click', doUndo);
+  $('redo').addEventListener('click', doRedo);
+  $('revert').addEventListener('click', () => {
+    if (!dirty() || !confirm('Throw away your changes since the last save?')) return;
+    snapshot(); st.grid = JSON.parse(st.saved); draw(); update();
+  });
+  $('save').addEventListener('click', save);
+  $('open').addEventListener('click', () => $('file').click());
+  $('file').addEventListener('change', async () => {
+    const f = $('file').files[0]; if (!f) return;
+    try {
+      const data = JSON.parse(await f.text());
+      if (!data.grid || !data.key || !data.cols) throw new Error('This file is not a gem grid (.grid.json).');
+      const match = st.levels.find((l) => l.grid.endsWith('/' + f.name));
+      if (match) { st.level = match; $('level').value = match.number; }
+      setData(data);
+      st.saved = '';           // treat an opened file as unsaved in the repo
+      update();
+    } catch (e) { alert(e.message); }
+    $('file').value = '';
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); return; }
+    if (mod && e.key.toLowerCase() === 's') { e.preventDefault(); save(); return; }
+    if (mod) return;
+    const keys = Object.keys(st.data.key);
+    if (/^[1-9]$/.test(e.key) && keys[+e.key - 1]) { st.region = keys[+e.key - 1]; renderRegions(); }
+    const tool = { b: 'brush', f: 'fill', i: 'pick' }[e.key.toLowerCase()];
+    if (tool) document.querySelector(`#tools button[data-tool="${tool}"]`).click();
+  });
+  window.addEventListener('beforeunload', (e) => { if (dirty()) { e.preventDefault(); e.returnValue = ''; } });
+}
+
+function doUndo() {
+  const g = st.undo.pop(); if (!g) return;
+  st.redo.push(st.grid); st.grid = g; draw(); update();
+}
+function doRedo() {
+  const g = st.redo.pop(); if (!g) return;
+  st.undo.push(st.grid); st.grid = g; draw(); update();
+}
+
+bind();
+init().catch((e) => {
+  document.body.insertAdjacentHTML('afterbegin', `<div class="warn" style="margin:8px">The editor couldn't load the levels. Open it through a local web server from the repo folder (python3 -m http.server), at /tools/editor.html. Details: ${esc(e.message)}</div>`);
+});
+</script>
+</body>
+</html>

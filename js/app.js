@@ -3,7 +3,7 @@
 // Diamond Painting with Data: main app. Wires the painting, the query tools and the levels together.
 
 import { QueryEngine, QueryError } from './engine.js';
-import { prepare, selectByLocation, applyMethod } from './spatial.js';
+import { prepare, prepareGeometry, selectByLocation, applyMethod } from './spatial.js';
 import { Painter } from './render.js';
 import { AttributeTable } from './table.js';
 
@@ -12,7 +12,10 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 const STORE = 'diamond-data-v1';
 
 const METHOD_LABEL = { new: 'NEW', add: 'ADD', remove: 'REMOVE', subset: 'SUBSET' };
-const RELATION_LABEL = { intersects: 'intersect', touches: 'boundary touches', distance: 'within' };
+const RELATION_LABEL = {
+  intersects: 'intersect', touches: 'touch the boundary of', distance: 'are within',
+  within: 'are completely within', contains: 'completely contain', center_in: 'have their center in',
+};
 
 const state = {
   catalogue: null,
@@ -52,7 +55,7 @@ async function init() {
     onResize: () => { if (state.level) { painter.fit(); draw(); } },
   });
 
-  state.catalogue = await (await fetch('levels/levels.json')).json();
+  state.catalogue = await (await fetch('levels/levels.json', { cache: 'no-cache' })).json();
   buildStaticUI();
 
   const fromHash = parseInt(location.hash.replace('#', ''), 10);
@@ -165,14 +168,24 @@ function renderLevelNav() {
 // ------------------------------------------------------------ levels
 async function loadLevel(n) {
   const level = state.catalogue.levels.find((l) => l.number === n);
-  const gj = await (await fetch(`levels/${level.file}`)).json();
+  const gj = await (await fetch(`levels/${level.file}`, { cache: 'no-cache' })).json();
   state.level = level;
   state.features = gj.features;
   state.geoms = prepare(gj.features);
+  state.refs = await Promise.all((level.references || []).map(async (ref) => {
+    const rj = await (await fetch(`levels/${ref.file}`, { cache: 'no-cache' })).json();
+    return { ...ref, features: rj.features, geoms: rj.features.map((f) => prepareGeometry(f.geometry)) };
+  }));
   engine.load(level.fields, gj.features, level.table);
   $('table-name').textContent = level.table;
   document.querySelectorAll('.layer-name').forEach((el) => { el.textContent = level.table; });
-  $('selecting-layer').textContent = `${level.table} (selected features only)`;
+  $('source').innerHTML = `<option value="selected">${esc(level.table)} (selected features only)</option>` +
+    state.refs.map((r) => `<option value="${esc(r.table)}">${esc(r.table)} (${esc(r.about.toLowerCase())})</option>`).join('');
+  const unit = level.units || 'm';
+  $('dist-unit').textContent = unit;
+  $('distance').value = level.default_distance || level.gem_size || 100;
+  $('loc-hint').textContent = `One gem is ${level.gem_size} ${unit} across. Distances are measured edge to edge.` +
+    (state.refs.length ? ` Other layers are drawn on the painting: ${state.refs.map((r) => r.table).join(', ')}.` : '');
   $('layer-info').innerHTML = `<span title="${esc(level.about)}">Layer <code>${esc(level.table)}</code> · <b>${esc(level.dataset)}</b></span><small>click a field name to insert it</small>`;
   state.target = computeTarget(level);
   history.replaceState(null, '', `#${n}`);
@@ -230,8 +243,16 @@ function computeTarget(level) {
 function runStep(step, current) {
   const result = step.type === 'attribute'
     ? engine.select(step.where)
-    : selectByLocation(state.geoms, current, step.relation, step.distance || 0);
+    : locationResult(step.source || 'selected', current, step.relation, step.distance || 0);
   return applyMethod(current, result, step.method);
+}
+
+/** Select by Location against the selected hexes or a whole reference layer. */
+function locationResult(source, current, relation, dist) {
+  if (source === 'selected') return selectByLocation(state.geoms, state.geoms, current, relation, dist);
+  const ref = state.refs.find((r) => r.table === source);
+  if (!ref) throw new Error(`Unknown layer ${source}`);
+  return selectByLocation(state.geoms, ref.geoms, null, relation, dist);
 }
 
 const colors = () => state.level.colors.map((c) => c.color);
@@ -439,7 +460,7 @@ function log(tag, text, query) {
 }
 
 function draw() {
-  painter.draw({ paint: state.paint, colors: colors(), selection: state.selection, wrong: state.wrong, hover: state.hover, focus: state.focus });
+  painter.draw({ paint: state.paint, colors: colors(), selection: state.selection, wrong: state.wrong, hover: state.hover, focus: state.focus, refs: state.refs });
 }
 
 function refresh() {
@@ -478,21 +499,24 @@ function run() {
       result = engine.select(query);
       tag = METHOD_LABEL[method];
     } else {
-      if (!state.selection.size) {
-        throw new QueryError('Select by Location compares features with the features that are <b>already selected</b>. Select some first, for example with Select by Attributes.');
+      const source = $('source').value;
+      if (source === 'selected' && !state.selection.size) {
+        throw new QueryError('With <b>selected features only</b>, Select by Location compares features with the ones that are <b>already selected</b>. Select some first, for example with Select by Attributes.');
       }
       const relation = $('relation').value;
+      const unit = state.level.units || 'm';
       const dist = parseFloat($('distance').value);
-      if (relation === 'distance' && !(dist >= 0)) throw new QueryError('Type a search distance of 0 mm or more.');
-      result = selectByLocation(state.geoms, state.selection, relation, dist);
+      if (relation === 'distance' && !(dist >= 0)) throw new QueryError(`Type a search distance of 0 ${unit} or more.`);
+      result = locationResult(source, state.selection, relation, dist);
       tag = METHOD_LABEL[method];
-      desc = `Location: features that ${RELATION_LABEL[relation]}${relation === 'distance' ? ` ${dist} mm of` : ''} the selected features`;
+      const what = source === 'selected' ? 'the selected features' : `<code>${esc(source)}</code>`;
+      desc = `Location: features that ${RELATION_LABEL[relation]}${relation === 'distance' ? ` ${dist} ${unit} of` : ''} ${what}`;
     }
     pushUndo();
     const before = state.selection.size;
     state.selection = applyMethod(state.selection, result, method);
     const n = state.selection.size;
-    log(tag, desc ? `${esc(desc)} → ${n} selected` : `→ ${n} selected`, query);
+    log(tag, desc ? `${desc} → ${n} selected` : `→ ${n} selected`, query);
 
     if (result.size === 0) {
       showMessage('info', state.tab === 'attr'

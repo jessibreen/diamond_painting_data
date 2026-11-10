@@ -1,0 +1,1 @@
+{"type":"FeatureCollection","name":"level12_trails","features":[{"type":"Feature","properties":{"name":"Ridge Trail"},"geometry":{"type":"LineString","coordinates":[[60.0,2221.281],[500,2371.281],[900,2171.281],[1300,1971.281],[1700,2121.281],[2100,2321.281],[2500,2221.281],[2900,1971.281],[3300,2021.281],[3700,2171.281],[3980.0,2221.281]]}}]}

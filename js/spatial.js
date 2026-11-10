@@ -1,26 +1,40 @@
 // SPDX-FileCopyrightText: 2026 Jessica Breen
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Select by Location on plain x/y coordinates (millimetres on the canvas).
-// The painting is fictional, so there is no map projection to worry about.
+// Select by Location on plain x/y coordinates (meters on a flat map).
+// The paintings are fictional, so there is no map projection to worry about.
+//
+// Every shape is prepared into { kind, rings | pts, cx, cy, r }:
+//   kind 'polygon' -> rings: [[x, y], ...] (outer ring, not closed)
+//   kind 'line'    -> pts:   [[x, y], ...]
+//   kind 'point'   -> pts:   [[x, y]]
+// cx, cy, r give a bounding circle used to skip far-away pairs quickly.
 
-const EPS = 1e-3; // mm; coordinates are stored to 4 decimal places
+let EPS = 1e-3;
 
-export function prepare(features) {
-  return features.map((f) => {
-    const ring = f.geometry.coordinates[0].slice(0, -1);
-    let cx = 0, cy = 0;
-    for (const [x, y] of ring) { cx += x; cy += y; }
-    cx /= ring.length; cy /= ring.length;
-    let r = 0;
-    for (const [x, y] of ring) r = Math.max(r, Math.hypot(x - cx, y - cy));
-    return { ring, cx, cy, r };
-  });
+function finish(g, pts) {
+  let cx = 0, cy = 0;
+  for (const [x, y] of pts) { cx += x; cy += y; }
+  cx /= pts.length; cy /= pts.length;
+  let r = 0;
+  for (const [x, y] of pts) r = Math.max(r, Math.hypot(x - cx, y - cy));
+  return Object.assign(g, { cx, cy, r });
 }
 
-function segDist(px, py, ax, ay, bx, by) {
-  const dx = bx - ax, dy = by - ay;
-  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)));
-  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+export function prepareGeometry(geom) {
+  if (geom.type === 'Polygon') {
+    const ring = geom.coordinates[0].slice(0, -1);
+    return finish({ kind: 'polygon', ring }, ring);
+  }
+  if (geom.type === 'LineString') return finish({ kind: 'line', pts: geom.coordinates }, geom.coordinates);
+  if (geom.type === 'Point') return finish({ kind: 'point', pts: [geom.coordinates] }, [geom.coordinates]);
+  throw new Error(`Unsupported geometry type ${geom.type}`);
+}
+
+/** Prepare the main (hex) layer. Also sets the tolerance from the hex size. */
+export function prepare(features) {
+  const geoms = features.map((f) => prepareGeometry(f.geometry));
+  if (geoms.length) EPS = geoms[0].r * 1e-3;
+  return geoms;
 }
 
 export function pointInRing(x, y, ring) {
@@ -32,39 +46,87 @@ export function pointInRing(x, y, ring) {
   return inside;
 }
 
-function ringDist(a, b) {
-  if (pointInRing(a.cx, a.cy, b.ring) || pointInRing(b.cx, b.cy, a.ring)) return 0;
+function segDist(px, py, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay;
+  const len = dx * dx + dy * dy;
+  const t = len ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / len)) : 0;
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+}
+
+function segsCross(a, b, c, d) {
+  const o = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
+  const d1 = o(c, d, a), d2 = o(c, d, b), d3 = o(a, b, c), d4 = o(a, b, d);
+  return ((d1 > 0) !== (d2 > 0)) && ((d3 > 0) !== (d4 > 0));
+}
+
+function segSegDist(a, b, c, d) {
+  if (segsCross(a, b, c, d)) return 0;
+  return Math.min(segDist(a[0], a[1], c[0], c[1], d[0], d[1]), segDist(b[0], b[1], c[0], c[1], d[0], d[1]),
+    segDist(c[0], c[1], a[0], a[1], b[0], b[1]), segDist(d[0], d[1], a[0], a[1], b[0], b[1]));
+}
+
+function segments(g) {
+  if (g.kind === 'polygon') return g.ring.map((p, i) => [p, g.ring[(i + 1) % g.ring.length]]);
+  if (g.kind === 'line') return g.pts.slice(0, -1).map((p, i) => [p, g.pts[i + 1]]);
+  return [[g.pts[0], g.pts[0]]];
+}
+
+function vertices(g) { return g.kind === 'polygon' ? g.ring : g.pts; }
+
+/** Shortest distance between two shapes (0 if they touch or overlap). */
+function distance(a, b) {
+  if (a === b) return 0;
+  if (a.kind === 'polygon' && vertices(b).some(([x, y]) => pointInRing(x, y, a.ring))) return 0;
+  if (b.kind === 'polygon' && vertices(a).some(([x, y]) => pointInRing(x, y, b.ring))) return 0;
   let d = Infinity;
-  for (const [P, Q] of [[a, b], [b, a]]) {
-    for (const [x, y] of P.ring) {
-      for (let i = 0; i < Q.ring.length; i++) {
-        const [ax, ay] = Q.ring[i], [bx, by] = Q.ring[(i + 1) % Q.ring.length];
-        d = Math.min(d, segDist(x, y, ax, ay, bx, by));
-      }
-    }
+  for (const [p, q] of segments(a)) for (const [r, s] of segments(b)) {
+    d = Math.min(d, segSegDist(p, q, r, s));
+    if (d === 0) return 0;
   }
   return d;
 }
 
-const overlaps = (a, b) => pointInRing(a.cx, a.cy, b.ring) || pointInRing(b.cx, b.cy, a.ring);
+/** Do the insides of two shapes overlap (not just their boundaries)? */
+function interiorsOverlap(a, b) {
+  if (a === b) return true;
+  if (a.kind !== 'polygon' || b.kind !== 'polygon') return false;
+  return pointInRing(a.cx, a.cy, b.ring) || pointInRing(b.cx, b.cy, a.ring);
+}
+
+/** Is shape t completely inside polygon s? */
+function within(t, s) {
+  if (s.kind !== 'polygon') return t === s;
+  // a point on the boundary is not inside (as in ArcGIS and QGIS)
+  if (t.kind === 'point') {
+    const [x, y] = t.pts[0];
+    return pointInRing(x, y, s.ring) && !segments(s).some(([p, q]) => segDist(x, y, p[0], p[1], q[0], q[1]) <= EPS);
+  }
+  if (!vertices(t).every(([x, y]) => pointInRing(x, y, s.ring) || segments(s).some(([p, q]) => segDist(x, y, p[0], p[1], q[0], q[1]) <= EPS))) return false;
+  // no edge of t may cross out of s
+  for (const [p, q] of segments(t)) for (const [r, u] of segments(s)) if (segsCross(p, q, r, u)) return false;
+  return true;
+}
 
 /**
- * Select target hexes by their relationship to the source hexes.
- * relation: 'intersects' | 'touches' | 'distance'
+ * Select target features by their relationship to source shapes.
+ * targets, sources: prepared geometries. sourceIdx: which sources to use (a Set of indexes, or null for all).
+ * relation: 'intersects' | 'touches' | 'distance' | 'within' | 'contains' | 'center_in'
  */
-export function selectByLocation(geoms, sourceSet, relation, distance = 0) {
+export function selectByLocation(targets, sources, sourceIdx, relation, dist = 0) {
   const out = new Set();
-  const source = [...sourceSet].map((i) => geoms[i]);
-  const reach = relation === 'distance' ? distance : 0;
-  for (let t = 0; t < geoms.length; t++) {
-    const T = geoms[t];
-    for (const S of source) {
+  const src = sourceIdx ? [...sourceIdx].map((i) => sources[i]) : sources;
+  const reach = relation === 'distance' ? dist : 0;
+  for (let t = 0; t < targets.length; t++) {
+    const T = targets[t];
+    for (const S of src) {
       if (Math.hypot(T.cx - S.cx, T.cy - S.cy) > T.r + S.r + reach + EPS) continue;
-      const d = T === S ? 0 : ringDist(T, S);
       let hit;
-      if (relation === 'intersects') hit = d <= EPS;
-      else if (relation === 'touches') hit = d <= EPS && T !== S && !overlaps(T, S);
-      else hit = d <= distance + EPS;
+      if (relation === 'intersects') hit = distance(T, S) <= EPS;
+      else if (relation === 'touches') hit = T !== S && distance(T, S) <= EPS && !interiorsOverlap(T, S);
+      else if (relation === 'distance') hit = distance(T, S) <= dist + EPS;
+      else if (relation === 'within') hit = within(T, S);
+      else if (relation === 'contains') hit = within(S, T);
+      else if (relation === 'center_in') hit = S.kind === 'polygon' ? pointInRing(T.cx, T.cy, S.ring) : T === S;
       if (hit) { out.add(t); break; }
     }
   }

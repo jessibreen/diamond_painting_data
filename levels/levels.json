@@ -1,6 +1,4 @@
 {
- "units": "mm",
- "gem_size": 2.5,
  "levels": [
   {
    "number": 1,
@@ -10,7 +8,10 @@
    "table": "parcels",
    "about": "Property parcels in a small city, one row per parcel.",
    "file": "level01_heart.geojson",
+   "grid": "art/level01_heart.grid.json",
    "location": false,
+   "gem_size": 50,
+   "units": "m",
    "tutorial": [
     {
      "event": "identify",
@@ -44,6 +45,38 @@
     "To ask “is this field equal to this value?” write <code>field = value</code>. Numbers are written plain: <code>acres = 12</code>. Text goes inside <b>single quotes</b>: <code>county = 'Kent'</code>.",
     "Look at each field’s <b>type</b>. Codes that look like numbers, like ZIP codes or phone numbers, are stored as <b>TEXT</b> because you never do math with them. A number field would also drop the leading zero in <code>'02134'</code>."
    ],
+   "questions": [
+    {
+     "question": "Which query finds parcels where <code>county</code> (a TEXT field) is Kent?",
+     "options": [
+      "<code>county = Kent</code>",
+      "<code>county = 'Kent'</code>",
+      "<code>county = \"Kent\"</code>",
+      "<code>'county' = 'Kent'</code>"
+     ],
+     "answer": 1,
+     "explain": "Text values go in single quotes. The field name doesn’t.",
+     "hints": [
+      "Without quotes, SQL thinks <code>Kent</code> is the name of a field.",
+      null,
+      "Double quotes are for field names, not text values.",
+      "Quoting the field name turns it into the text <code>'county'</code>, which never equals <code>'Kent'</code>."
+     ]
+    },
+    {
+     "question": "A <code>phone</code> field holds values like 6175550142. What type should it be?",
+     "options": [
+      "NUMBER",
+      "TEXT"
+     ],
+     "answer": 1,
+     "explain": "You never do math with phone numbers, and a number field would drop leading zeros. It’s a code, so it’s text.",
+     "hints": [
+      "Would you ever add or average phone numbers? And what happens to a leading zero?",
+      null
+     ]
+    }
+   ],
    "fields": [
     {
      "name": "fid",
@@ -64,6 +97,21 @@
      "name": "floors",
      "type": "INTEGER",
      "about": "Number of stories in the building on the parcel"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Cream",
+     "color": "#f4e4c1"
+    },
+    {
+     "name": "Ruby",
+     "color": "#c8102e"
+    },
+    {
+     "name": "Blush",
+     "color": "#f7a1b5"
     }
    ],
    "requests": [
@@ -100,27 +148,27 @@
       }
      ]
     }
-   ],
-   "available": true,
-   "colors": [
-    {
-     "name": "Cream",
-     "color": "#f4e4c1"
-    },
-    {
-     "name": "Ruby",
-     "color": "#c8102e"
-    },
-    {
-     "name": "Blush",
-     "color": "#f7a1b5"
-    }
    ]
   },
   {
    "number": 2,
    "title": "Sunset",
    "skill": "Comparisons ( >, <, >=, <=, <> )",
+   "dataset": "Mountain sub-watersheds",
+   "table": "watersheds",
+   "about": "Small watersheds across a mountain range, one polygon per watershed.",
+   "file": "level02_sunset.geojson",
+   "grid": "art/level02_sunset.grid.json",
+   "location": false,
+   "gem_size": 5000,
+   "units": "m",
+   "lesson": [
+    "Not every question is “equals.” Numbers can be compared: <code>&gt;</code> greater than, <code>&lt;</code> less than, <code>&gt;=</code> greater than or equal to, <code>&lt;=</code> less than or equal to, and <code>&lt;&gt;</code> not equal to.",
+    "Watch the edges! <code>pop &gt; 5000</code> leaves out a town of exactly 5000. <code>pop &gt;= 5000</code> includes it. Requests say this in words: “more than,” “at least,” “or higher,” “or less.”",
+    "Leave commas out of numbers: write <code>1900</code>, not <code>1,900</code>.",
+    "This table has more fields than you need. Part of the job is figuring out which field answers each request.",
+    "Filling a hex replaces any color already there, like pressing a new gem on top. Work down the color key in order. Some colors are used for more than one request."
+   ],
    "questions": [
     {
      "question": "A request asks for watersheds with a mean elevation of <b>at least</b> 850 m. Which condition matches?",
@@ -174,18 +222,6 @@
      ]
     }
    ],
-   "dataset": "Mountain sub-watersheds",
-   "table": "watersheds",
-   "about": "Small watersheds across a mountain range, one polygon per watershed.",
-   "file": "level02_sunset.geojson",
-   "location": false,
-   "lesson": [
-    "Not every question is “equals.” Numbers can be compared: <code>&gt;</code> greater than, <code>&lt;</code> less than, <code>&gt;=</code> greater than or equal to, <code>&lt;=</code> less than or equal to, and <code>&lt;&gt;</code> not equal to.",
-    "Watch the edges! <code>pop &gt; 5000</code> leaves out a town of exactly 5000. <code>pop &gt;= 5000</code> includes it. Requests say this in words: “more than,” “at least,” “or higher,” “or less.”",
-    "Leave commas out of numbers: write <code>1900</code>, not <code>1,900</code>.",
-    "This table has more fields than you need. Part of the job is figuring out which field answers each request.",
-    "Filling a hex replaces any color already there, like pressing a new gem on top. Work down the color key in order. Some colors are used for more than one request."
-   ],
    "fields": [
     {
      "name": "fid",
@@ -221,6 +257,29 @@
      "name": "area_km2",
      "type": "REAL",
      "about": "Area of the watershed, in square kilometers"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Tangerine",
+     "color": "#f6872b"
+    },
+    {
+     "name": "Rose",
+     "color": "#e0457b"
+    },
+    {
+     "name": "Plum",
+     "color": "#5b2a6e"
+    },
+    {
+     "name": "Gold",
+     "color": "#ffd23f"
+    },
+    {
+     "name": "Navy",
+     "color": "#1d2f5e"
     }
    ],
    "requests": [
@@ -290,45 +349,65 @@
       }
      ]
     }
-   ],
-   "available": true,
-   "colors": [
-    {
-     "name": "Tangerine",
-     "color": "#f6872b"
-    },
-    {
-     "name": "Rose",
-     "color": "#e0457b"
-    },
-    {
-     "name": "Plum",
-     "color": "#5b2a6e"
-    },
-    {
-     "name": "Gold",
-     "color": "#ffd23f"
-    },
-    {
-     "name": "Navy",
-     "color": "#1d2f5e"
-    }
    ]
   },
   {
    "number": 3,
-   "title": "Mushroom",
+   "title": "Toadstools",
    "skill": "AND",
    "dataset": "Vegetation survey plots",
    "table": "plots",
-   "about": "Field survey plots from a vegetation study, one row per plot.",
-   "file": "level03_mushroom.geojson",
+   "about": "Field survey plots from a vegetation study, one polygon per plot.",
+   "file": "level03_toadstools.geojson",
+   "grid": "art/level03_toadstools.grid.json",
    "location": false,
+   "gem_size": 30,
+   "units": "m",
+   "art": {
+    "file": "art/level03_toadstools.svg",
+    "license": "CC0"
+   },
    "lesson": [
     "Sometimes one condition isn’t enough. <b>AND</b> joins two conditions, and a feature is selected only if <b>both</b> are true.",
     "<code>land_use = 'farm' AND acres &gt; 10</code> selects farms bigger than 10 acres. A small farm fails, and so does a big parking lot.",
     "Each condition needs its own field name: write <code>acres &gt; 10 AND acres &lt; 20</code>, not <code>acres &gt; 10 AND &lt; 20</code>.",
     "Requests rarely say “AND.” Listen for two facts about the same feature: “forest plots <i>where</i> invasive species were found.”"
+   ],
+   "questions": [
+    {
+     "question": "Which plots does <code>habitat = 'forest' AND invasive = 'Y'</code> select?",
+     "options": [
+      "Every forest plot, plus every plot with invasive species",
+      "Only forest plots that have invasive species",
+      "Forest plots without invasive species",
+      "Nothing, because a plot can’t have two values"
+     ],
+     "answer": 1,
+     "explain": "AND needs both conditions to be true for the same plot.",
+     "hints": [
+      "That’s what OR would do. AND is stricter.",
+      null,
+      "<code>invasive = 'Y'</code> means invasive species <i>were</i> found.",
+      "Each condition checks a different field, so one plot can pass both."
+     ]
+    },
+    {
+     "question": "Which condition finds plots with between 20 and 40 percent canopy (both included)?",
+     "options": [
+      "<code>canopy_pct &gt;= 20 AND &lt;= 40</code>",
+      "<code>canopy_pct &gt;= 20 AND canopy_pct &lt;= 40</code>",
+      "<code>canopy_pct &gt;= 20 OR canopy_pct &lt;= 40</code>",
+      "<code>canopy_pct = 20 AND canopy_pct = 40</code>"
+     ],
+     "answer": 1,
+     "explain": "Each side of AND is a complete condition with its own field name.",
+     "hints": [
+      "The second condition is missing its field name.",
+      null,
+      "With OR, every plot passes: every number is either at least 20 or at most 40.",
+      "No plot can equal 20 and 40 at the same time."
+     ]
+    }
    ],
    "fields": [
     {
@@ -352,19 +431,42 @@
      "about": "Were invasive species found? Y or N"
     },
     {
-     "name": "elev_m",
-     "type": "INTEGER",
-     "about": "Elevation of the plot, in meters"
-    },
-    {
      "name": "canopy_pct",
      "type": "INTEGER",
      "about": "Percent of the plot shaded by tree canopy"
     },
     {
+     "name": "elev_m",
+     "type": "INTEGER",
+     "about": "Elevation of the plot, in meters"
+    },
+    {
      "name": "survey_yr",
      "type": "INTEGER",
      "about": "Year the plot was last surveyed"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Powder Blue",
+     "color": "#a8dcf0"
+    },
+    {
+     "name": "Scarlet",
+     "color": "#d62828"
+    },
+    {
+     "name": "White",
+     "color": "#ffffff"
+    },
+    {
+     "name": "Tan",
+     "color": "#c69c6c"
+    },
+    {
+     "name": "Lime",
+     "color": "#d9e021"
     }
    ],
    "requests": [
@@ -381,39 +483,6 @@
     },
     {
      "color": 1,
-     "rule": "<b>Meadow</b> plots with <b>no</b> invasive species",
-     "solution": [
-      {
-       "type": "attribute",
-       "where": "habitat = 'meadow' AND invasive = 'N'",
-       "method": "new"
-      }
-     ]
-    },
-    {
-     "color": 2,
-     "rule": "<b>Meadow</b> plots where invasive species <b>were found</b>",
-     "solution": [
-      {
-       "type": "attribute",
-       "where": "habitat = 'meadow' AND invasive = 'Y'",
-       "method": "new"
-      }
-     ]
-    },
-    {
-     "color": 3,
-     "rule": "Every <b>wetland</b> plot",
-     "solution": [
-      {
-       "type": "attribute",
-       "where": "habitat = 'wetland'",
-       "method": "new"
-      }
-     ]
-    },
-    {
-     "color": 4,
      "rule": "<b>Forest</b> plots with <b>no</b> invasive species",
      "solution": [
       {
@@ -435,42 +504,26 @@
      ]
     },
     {
-     "color": 5,
-     "rule": "<b>Forest</b> plots at <b>170 m elevation or lower</b>",
+     "color": 3,
+     "rule": "<b>Meadow</b> plots with <b>at least 60%</b> canopy cover",
      "solution": [
       {
        "type": "attribute",
-       "where": "habitat = 'forest' AND elev_m <= 170",
+       "where": "habitat = 'meadow' AND canopy_pct >= 60",
        "method": "new"
       }
      ]
-    }
-   ],
-   "available": true,
-   "colors": [
-    {
-     "name": "Powder Blue",
-     "color": "#a8dcf0"
     },
     {
-     "name": "Moss Green",
-     "color": "#4f9a3a"
-    },
-    {
-     "name": "White",
-     "color": "#ffffff"
-    },
-    {
-     "name": "Ivory",
-     "color": "#f3ead3"
-    },
-    {
-     "name": "Scarlet",
-     "color": "#d62828"
-    },
-    {
-     "name": "Tan",
-     "color": "#c9a27e"
+     "color": 4,
+     "rule": "<b>Meadow</b> plots with <b>less than 60%</b> canopy cover",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "habitat = 'meadow' AND canopy_pct < 60",
+       "method": "new"
+      }
+     ]
     }
    ]
   },
@@ -478,37 +531,1101 @@
    "number": 4,
    "title": "Rainbow",
    "skill": "OR (and the “= 'a' OR 'b'” trap)",
-   "available": false
+   "dataset": "City zoning districts",
+   "table": "zoning",
+   "about": "Zoning districts from a city’s zoning map, one polygon per district.",
+   "file": "level04_rainbow.geojson",
+   "grid": "art/level04_rainbow.grid.json",
+   "location": false,
+   "gem_size": 200,
+   "units": "m",
+   "lesson": [
+    "<b>OR</b> joins two conditions, and a feature is selected if <b>either one</b> (or both) is true. OR usually selects <i>more</i> features; AND selects fewer.",
+    "<code>county = 'Kent' OR county = 'Sussex'</code> selects features in either county.",
+    "The classic mistake is <code>county = 'Kent' OR 'Sussex'</code>. It reads fine in English, but SQL sees <code>'Sussex'</code> as a condition on its own, and it doesn’t mean what you want. Each side of OR needs the field name, the operator and the value.",
+    "OR works across different fields too: <code>zone_code = 'INST' OR max_height_ft &gt; 120</code>."
+   ],
+   "questions": [
+    {
+     "question": "Which query selects districts zoned <code>R-1</code> or <code>R-2</code>?",
+     "options": [
+      "<code>zone_code = 'R-1' OR 'R-2'</code>",
+      "<code>zone_code = 'R-1' OR zone_code = 'R-2'</code>",
+      "<code>zone_code = 'R-1' AND zone_code = 'R-2'</code>",
+      "<code>zone_code = 'R-1, R-2'</code>"
+     ],
+     "answer": 1,
+     "explain": "Each side of OR is a complete condition.",
+     "hints": [
+      "This is the classic trap: the right side is missing <code>zone_code =</code>.",
+      null,
+      "A district can’t have two zone codes at once, so AND selects nothing.",
+      "That looks for one district whose code is literally the text “R-1, R-2”."
+     ]
+    },
+    {
+     "question": "Compared with <code>a AND b</code>, does <code>a OR b</code> select more features or fewer?",
+     "options": [
+      "More (or the same)",
+      "Fewer (or the same)"
+     ],
+     "answer": 0,
+     "explain": "OR only needs one condition to be true, so it can only add features.",
+     "hints": [
+      null,
+      "AND is the strict one: it needs both conditions to be true."
+     ]
+    }
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "zone_id",
+     "type": "TEXT",
+     "about": "District ID"
+    },
+    {
+     "name": "zone_code",
+     "type": "TEXT",
+     "about": "Zoning district code (R = residential, C = commercial, I = industrial…)"
+    },
+    {
+     "name": "max_height_ft",
+     "type": "INTEGER",
+     "about": "Tallest building allowed, in feet"
+    },
+    {
+     "name": "min_lot_sqft",
+     "type": "INTEGER",
+     "about": "Smallest lot allowed for a new house, in square feet (0 = no minimum)"
+    },
+    {
+     "name": "adopted_yr",
+     "type": "INTEGER",
+     "about": "Year the district was adopted"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Sky Blue",
+     "color": "#bde4f4"
+    },
+    {
+     "name": "Olive",
+     "color": "#7cb342"
+    },
+    {
+     "name": "Red",
+     "color": "#e53935"
+    },
+    {
+     "name": "Orange",
+     "color": "#fb8c00"
+    },
+    {
+     "name": "Yellow",
+     "color": "#fdd835"
+    },
+    {
+     "name": "Green",
+     "color": "#43a047"
+    },
+    {
+     "name": "Blue",
+     "color": "#1e88e5"
+    },
+    {
+     "name": "Violet",
+     "color": "#8e24aa"
+    },
+    {
+     "name": "White",
+     "color": "#ffffff"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Districts zoned <b>OS</b> or <b>PARK</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "zone_code = 'OS' OR zone_code = 'PARK'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "Districts zoned <b>AG</b> or <b>RR</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "zone_code = 'AG' OR zone_code = 'RR'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "Districts zoned <b>R-1</b> or <b>R-2</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "zone_code = 'R-1' OR zone_code = 'R-2'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 3,
+     "rule": "Districts zoned <b>R-3</b> or <b>R-4</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "zone_code = 'R-3' OR zone_code = 'R-4'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 4,
+     "rule": "Districts zoned <b>C-1</b> or <b>C-2</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "zone_code = 'C-1' OR zone_code = 'C-2'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 5,
+     "rule": "Districts zoned <b>C-3</b> or <b>MU</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "zone_code = 'C-3' OR zone_code = 'MU'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 6,
+     "rule": "Districts zoned <b>I-1</b> or <b>I-2</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "zone_code = 'I-1' OR zone_code = 'I-2'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 7,
+     "rule": "Districts zoned <b>I-3</b> or <b>PUD</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "zone_code = 'I-3' OR zone_code = 'PUD'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 8,
+     "rule": "Districts zoned <b>INST</b>, <b>or</b> any district that allows buildings <b>taller than 120 ft</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "zone_code = 'INST' OR max_height_ft > 120",
+       "method": "new"
+      }
+     ]
+    }
+   ]
   },
   {
    "number": 5,
    "title": "Butterfly",
    "skill": "Parentheses: mixing AND and OR",
-   "available": false
+   "dataset": "Census tracts",
+   "table": "tracts",
+   "about": "Census tracts with a few American Community Survey estimates, one polygon per tract.",
+   "file": "level05_butterfly.geojson",
+   "grid": "art/level05_butterfly.grid.json",
+   "location": false,
+   "gem_size": 2000,
+   "units": "m",
+   "lesson": [
+    "When a query mixes AND and OR, SQL does the <b>AND first</b>, the way math does multiplication before addition.",
+    "So <code>county = 'Cedar' OR county = 'Dale' AND med_income &gt; 75000</code> really means <code>county = 'Cedar' OR (county = 'Dale' AND med_income &gt; 75000)</code>: every Cedar tract, plus the wealthier Dale tracts.",
+    "<b>Parentheses</b> say what goes together: <code>(county = 'Cedar' OR county = 'Dale') AND med_income &gt; 75000</code> means wealthier tracts in either county.",
+    "When a query has both AND and OR, use parentheses every time, even when you think you don’t need them."
+   ],
+   "questions": [
+    {
+     "question": "SQL does AND before OR. Which query means the same as <code>a OR b AND c</code>?",
+     "options": [
+      "<code>(a OR b) AND c</code>",
+      "<code>a OR (b AND c)</code>"
+     ],
+     "answer": 1,
+     "explain": "AND binds tighter, so <code>b AND c</code> is grouped first.",
+     "hints": [
+      "That’s what you usually <i>want</i>, which is why you need to write the parentheses.",
+      null
+     ]
+    },
+    {
+     "question": "Which query selects tracts in Cedar <b>or</b> Dale County with more than 50% renters?",
+     "options": [
+      "<code>county = 'Cedar' OR county = 'Dale' AND pct_renter &gt; 50</code>",
+      "<code>(county = 'Cedar' OR county = 'Dale') AND pct_renter &gt; 50</code>",
+      "<code>county = 'Cedar' OR (county = 'Dale' AND pct_renter &gt; 50)</code>",
+      "<code>(county = 'Cedar' AND county = 'Dale') OR pct_renter &gt; 50</code>"
+     ],
+     "answer": 1,
+     "explain": "The parentheses keep the two counties together, and the renter test applies to both.",
+     "hints": [
+      "Without parentheses, every Cedar tract is selected, renters or not.",
+      null,
+      "This is how SQL reads the first option: all of Cedar, plus Dale tracts with many renters.",
+      "A tract can’t be in two counties at once."
+     ]
+    }
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "geoid",
+     "type": "TEXT",
+     "about": "11-digit census tract ID (state + county + tract)"
+    },
+    {
+     "name": "county",
+     "type": "TEXT",
+     "about": "County name"
+    },
+    {
+     "name": "pop_total",
+     "type": "INTEGER",
+     "about": "Total population"
+    },
+    {
+     "name": "med_income",
+     "type": "INTEGER",
+     "about": "Median household income, in dollars"
+    },
+    {
+     "name": "pct_renter",
+     "type": "REAL",
+     "about": "Percent of occupied homes that are rented"
+    },
+    {
+     "name": "median_age",
+     "type": "REAL",
+     "about": "Median age of residents"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Mint",
+     "color": "#c8f0d8"
+    },
+    {
+     "name": "Violet",
+     "color": "#7b4fd6"
+    },
+    {
+     "name": "Sky",
+     "color": "#6ec6f0"
+    },
+    {
+     "name": "Gold",
+     "color": "#ffc93c"
+    },
+    {
+     "name": "Charcoal",
+     "color": "#2b2b3a"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Tracts with <b>fewer than 2,000</b> residents",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "pop_total < 2000",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "Tracts in <b>Cedar or Dale</b> County with a median household income <b>over $75,000</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "(county = 'Cedar' OR county = 'Dale') AND med_income > 75000",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "Tracts in <b>Cedar or Dale</b> County with a median household income of <b>$75,000 or less</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "(county = 'Cedar' OR county = 'Dale') AND med_income <= 75000",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 3,
+     "rule": "Tracts in <b>Cedar or Dale</b> County where <b>more than 60%</b> of homes are rented",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "(county = 'Cedar' OR county = 'Dale') AND pct_renter > 60",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 4,
+     "rule": "Tracts in <b>Ashford or Birch</b> County with <b>2,000 or more</b> residents",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "(county = 'Ashford' OR county = 'Birch') AND pop_total >= 2000",
+       "method": "new"
+      }
+     ]
+    }
+   ]
   },
   {
    "number": 6,
    "title": "Cactus",
    "skill": "NOT, IN, BETWEEN",
-   "available": false
+   "dataset": "Grazing allotments",
+   "table": "allotments",
+   "about": "Public-land grazing allotments across several western states, one polygon per allotment.",
+   "file": "level06_cactus.geojson",
+   "grid": "art/level06_cactus.grid.json",
+   "location": false,
+   "gem_size": 3000,
+   "units": "m",
+   "lesson": [
+    "<b>IN</b> is a shortcut for a list of ORs: <code>state IN ('AZ', 'NM', 'NV')</code> means the same as <code>state = 'AZ' OR state = 'NM' OR state = 'NV'</code>.",
+    "<b>NOT</b> flips a condition: <code>NOT status = 'Active'</code> selects everything that isn’t Active. You can also write <code>status &lt;&gt; 'Active'</code>. <code>NOT IN</code> works too: <code>state NOT IN ('AZ', 'NM')</code>.",
+    "<b>BETWEEN</b> is a shortcut for a range: <code>yr BETWEEN 2015 AND 2018</code> means <code>yr &gt;= 2015 AND yr &lt;= 2018</code>. Both ends are <b>included</b>."
+   ],
+   "questions": [
+    {
+     "question": "Does <code>last_eval_yr BETWEEN 2015 AND 2018</code> select an allotment evaluated in 2018?",
+     "options": [
+      "Yes",
+      "No"
+     ],
+     "answer": 0,
+     "explain": "BETWEEN includes both ends of the range.",
+     "hints": [
+      null,
+      "BETWEEN is inclusive: it means <code>&gt;= 2015 AND &lt;= 2018</code>."
+     ]
+    },
+    {
+     "question": "Which query means the same as <code>state IN ('AZ', 'NM')</code>?",
+     "options": [
+      "<code>state = 'AZ' AND state = 'NM'</code>",
+      "<code>state = 'AZ' OR state = 'NM'</code>",
+      "<code>state = 'AZ, NM'</code>",
+      "<code>state BETWEEN 'AZ' AND 'NM'</code>"
+     ],
+     "answer": 1,
+     "explain": "IN is a list of ORs.",
+     "hints": [
+      "An allotment can only be in one state, so AND selects nothing.",
+      null,
+      "That looks for the literal text “AZ, NM”.",
+      "BETWEEN on text compares alphabetically, so it would also catch states like CO and ID."
+     ]
+    }
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "allot_no",
+     "type": "TEXT",
+     "about": "Allotment number"
+    },
+    {
+     "name": "allot_name",
+     "type": "TEXT",
+     "about": "Allotment name"
+    },
+    {
+     "name": "state",
+     "type": "TEXT",
+     "about": "Two-letter state code"
+    },
+    {
+     "name": "status",
+     "type": "TEXT",
+     "about": "Permit status"
+    },
+    {
+     "name": "aums",
+     "type": "INTEGER",
+     "about": "Animal unit months of grazing permitted per year"
+    },
+    {
+     "name": "last_eval_yr",
+     "type": "INTEGER",
+     "about": "Year of the last land health evaluation"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Sky Blue",
+     "color": "#a9d6f5"
+    },
+    {
+     "name": "Sand",
+     "color": "#e9c98f"
+    },
+    {
+     "name": "Saguaro",
+     "color": "#3c8d3f"
+    },
+    {
+     "name": "Pink",
+     "color": "#ff6fa8"
+    },
+    {
+     "name": "Gold",
+     "color": "#ffc107"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Allotments in <b>Arizona, New Mexico or Nevada</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "state IN ('AZ', 'NM', 'NV')",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "Allotments in <b>any other state</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "state NOT IN ('AZ', 'NM', 'NV')",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "Allotments whose status is <b>anything except Active</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "NOT status = 'Active'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 3,
+     "rule": "Allotments last evaluated <b>from 2015 through 2018</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "last_eval_yr BETWEEN 2015 AND 2018",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 4,
+     "rule": "Allotments permitted for <b>4,000 to 5,000 AUMs</b> (both included)",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "aums BETWEEN 4000 AND 5000",
+       "method": "new"
+      }
+     ]
+    }
+   ]
   },
   {
    "number": 7,
    "title": "Fish",
    "skill": "LIKE and wildcards",
-   "available": false
+   "dataset": "Lakes and ponds",
+   "table": "waterbodies",
+   "about": "Named lakes, ponds, reservoirs and swamps, modeled on the National Hydrography Dataset. One polygon per waterbody.",
+   "file": "level07_fish.geojson",
+   "grid": "art/level07_fish.grid.json",
+   "location": false,
+   "gem_size": 500,
+   "units": "m",
+   "lesson": [
+    "<code>=</code> only matches text exactly. <b>LIKE</b> matches a <b>pattern</b>, using wildcards.",
+    "<code>%</code> stands for <b>any number of characters</b> (even none). <code>gnis_name LIKE '%Pond'</code> finds names that end in “Pond.” <code>LIKE 'Mill%'</code> finds names that start with “Mill.” <code>LIKE '%Spring%'</code> finds “Spring” anywhere.",
+    "<code>_</code> (underscore) stands for <b>exactly one</b> character: <code>LIKE '_ake'</code> matches “Lake” and “Make” but not “Snake.”",
+    "Heads up: in this tool (SQLite), LIKE ignores capital letters, so <code>'%pond'</code> also matches “Pond.” Many databases are case-sensitive, so match the capitals you see in the data."
+   ],
+   "questions": [
+    {
+     "question": "Which names does <code>gnis_name LIKE 'Mill%'</code> match?",
+     "options": [
+      "“Mill Pond” and “Sawmill Pond”",
+      "“Mill Pond” and “Millers Pond”",
+      "Only “Mill”",
+      "Any name that contains “Mill”"
+     ],
+     "answer": 1,
+     "explain": "<code>'Mill%'</code> means the name starts with “Mill,” followed by anything.",
+     "hints": [
+      "“Sawmill Pond” doesn’t <i>start</i> with Mill.",
+      null,
+      "The <code>%</code> allows more characters after “Mill.”",
+      "That would be <code>'%Mill%'</code>, with a wildcard on both sides."
+     ]
+    },
+    {
+     "question": "What does <code>_</code> stand for in a LIKE pattern?",
+     "options": [
+      "Any number of characters",
+      "Exactly one character",
+      "A space",
+      "Nothing; it’s just an underscore"
+     ],
+     "answer": 1,
+     "explain": "<code>_</code> is a single-character wildcard; <code>%</code> matches any number.",
+     "hints": [
+      "That’s <code>%</code>.",
+      null,
+      "It matches any one character, including a space.",
+      "Inside LIKE it’s a wildcard."
+     ]
+    }
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "permanent_id",
+     "type": "TEXT",
+     "about": "Permanent identifier (three digits, a dash, five digits)"
+    },
+    {
+     "name": "gnis_name",
+     "type": "TEXT",
+     "about": "Official name from the Geographic Names Information System"
+    },
+    {
+     "name": "ftype",
+     "type": "TEXT",
+     "about": "Feature type"
+    },
+    {
+     "name": "area_sqkm",
+     "type": "REAL",
+     "about": "Surface area, in square kilometers"
+    },
+    {
+     "name": "elev_ft",
+     "type": "INTEGER",
+     "about": "Surface elevation, in feet"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Cobalt",
+     "color": "#1565c0"
+    },
+    {
+     "name": "Tangerine",
+     "color": "#f57c00"
+    },
+    {
+     "name": "White",
+     "color": "#ffffff"
+    },
+    {
+     "name": "Rust",
+     "color": "#bf360c"
+    },
+    {
+     "name": "Kelp",
+     "color": "#2e7d32"
+    },
+    {
+     "name": "Pale Aqua",
+     "color": "#b3e5fc"
+    },
+    {
+     "name": "Black",
+     "color": "#1b1b2f"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Waterbodies whose name <b>ends with “Lake”</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "gnis_name LIKE '%Lake'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "Waterbodies whose name <b>ends with “Pond”</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "gnis_name LIKE '%Pond'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "Waterbodies whose name <b>starts with “Mill”</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "gnis_name LIKE 'Mill%'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 3,
+     "rule": "Waterbodies whose name <b>ends with “Reservoir”</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "gnis_name LIKE '%Reservoir'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 4,
+     "rule": "Waterbodies whose name <b>ends with “Swamp”</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "gnis_name LIKE '%Swamp'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 5,
+     "rule": "Waterbodies whose name contains <b>“Spring” anywhere</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "gnis_name LIKE '%Spring%'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 6,
+     "rule": "Waterbodies whose permanent ID has a <b>9 right after the dash</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "permanent_id LIKE '___-9%'",
+       "method": "new"
+      }
+     ]
+    }
+   ]
   },
   {
    "number": 8,
-   "title": "Night sky",
+   "title": "Night skyline",
    "skill": "NULL (the “= NULL” trap)",
-   "available": false
+   "dataset": "Downtown building footprints",
+   "table": "footprints",
+   "about": "Building and lot footprints from a downtown survey, one polygon per footprint. Some values were never recorded.",
+   "file": "level08_skyline.geojson",
+   "grid": "art/level08_skyline.grid.json",
+   "location": false,
+   "gem_size": 30,
+   "units": "m",
+   "lesson": [
+    "Real data has gaps. When a value was never recorded, the field holds <b>NULL</b>: not zero, not blank text, just “no value.” The attribute table shows it as <code>&lt;Null&gt;</code>.",
+    "To find missing values, write <code>field IS NULL</code>. To find values that are there, write <code>field IS NOT NULL</code>.",
+    "The trap: <code>field = NULL</code> never selects anything, because nothing is “equal” to an unknown, not even another unknown.",
+    "NULLs also drop out of comparisons: <code>height_ft &lt; 50</code> skips every footprint whose height is NULL."
+   ],
+   "questions": [
+    {
+     "question": "What does <code>height_ft = NULL</code> select?",
+     "options": [
+      "Every footprint with no height",
+      "Nothing",
+      "Every footprint with a height of 0",
+      "Every footprint"
+     ],
+     "answer": 1,
+     "explain": "Nothing is ever equal to NULL. Use <code>IS NULL</code> instead.",
+     "hints": [
+      "That’s what you want, but you have to write <code>height_ft IS NULL</code>.",
+      null,
+      "NULL isn’t 0. Zero is a value; NULL means there’s no value.",
+      "It selects nothing, because the comparison is never true."
+     ]
+    },
+    {
+     "question": "Does <code>height_ft &lt; 50</code> select footprints whose height is NULL?",
+     "options": [
+      "Yes",
+      "No"
+     ],
+     "answer": 1,
+     "explain": "A missing height isn’t less than 50, or more than 50. It’s unknown, so it’s skipped.",
+     "hints": [
+      "An unknown value can’t be compared, so those footprints are left out.",
+      null
+     ]
+    }
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "bldg_id",
+     "type": "TEXT",
+     "about": "Footprint ID"
+    },
+    {
+     "name": "bldg_use",
+     "type": "TEXT",
+     "about": "What the building or lot is used for"
+    },
+    {
+     "name": "height_ft",
+     "type": "INTEGER",
+     "about": "Building height, in feet (not measured for open lots)"
+    },
+    {
+     "name": "year_built",
+     "type": "INTEGER",
+     "about": "Year built, where known"
+    },
+    {
+     "name": "addr",
+     "type": "TEXT",
+     "about": "Street address"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Twilight",
+     "color": "#2c3e6b"
+    },
+    {
+     "name": "Ink",
+     "color": "#121420"
+    },
+    {
+     "name": "Lamplight",
+     "color": "#ffd166"
+    },
+    {
+     "name": "White",
+     "color": "#ffffff"
+    },
+    {
+     "name": "Moonbeam",
+     "color": "#fff3c4"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Footprints with <b>no height</b> on record",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "height_ft IS NULL",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "Footprints that <b>do</b> have a height on record",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "height_ft IS NOT NULL",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "Footprints with a height on record but <b>no year built</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "height_ft IS NOT NULL AND year_built IS NULL",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 3,
+     "rule": "Footprints missing <b>both</b> a height and an address",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "height_ft IS NULL AND addr IS NULL",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 4,
+     "rule": "Footprints whose <b>use</b> was never recorded",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "bldg_use IS NULL",
+       "method": "new"
+      }
+     ]
+    }
+   ]
   },
   {
    "number": 9,
-   "title": "Hollow flower",
-   "skill": "Selection methods",
-   "available": false
+   "title": "Flower",
+   "skill": "Selection types",
+   "dataset": "Farm fields",
+   "table": "fields",
+   "about": "Crop fields reported by farms in one county, one polygon per field.",
+   "file": "level09_flower.geojson",
+   "grid": "art/level09_flower.grid.json",
+   "location": false,
+   "gem_size": 300,
+   "units": "m",
+   "lesson": [
+    "So far every query made a <b>new selection</b>. The <b>selection type</b> menu lets a query change the selection you already have instead:",
+    "<b>Add to the current selection</b> keeps what’s selected and adds the new matches. <b>Remove from the current selection</b> takes the new matches away. <b>Select subset from the current selection</b> keeps only the selected features that also match.",
+    "This is how GIS users build a complicated selection step by step, checking the count after each step. Some of these requests could be written as one query with AND, OR and NOT. Try building them in steps instead."
+   ],
+   "questions": [
+    {
+     "question": "All corn fields are selected. You run <code>irrigated = 'Y'</code> with <b>Remove from the current selection</b>. What’s left?",
+     "options": [
+      "Irrigated corn fields",
+      "Corn fields that aren’t irrigated",
+      "Every irrigated field",
+      "Nothing"
+     ],
+     "answer": 1,
+     "explain": "Remove takes the irrigated fields out of the selection, leaving the rest of the corn.",
+     "hints": [
+      "That’s what <b>select subset</b> would give you.",
+      null,
+      "Remove only works on what’s already selected, and only corn was selected.",
+      "Only the irrigated corn is removed."
+     ]
+    },
+    {
+     "question": "Soybean fields are selected. Which selection type lets you also select the large hay fields?",
+     "options": [
+      "New selection",
+      "Add to the current selection",
+      "Remove from the current selection",
+      "Select subset from the current selection"
+     ],
+     "answer": 1,
+     "explain": "Add keeps the soybeans and puts the hay fields on top.",
+     "hints": [
+      "A new selection would drop the soybeans.",
+      null,
+      "Remove would take hay fields away, and none are selected yet.",
+      "Subset keeps only fields that are already selected <i>and</i> match, and no soybean field is a hay field."
+     ]
+    }
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "field_id",
+     "type": "TEXT",
+     "about": "Tract and field number"
+    },
+    {
+     "name": "farm_no",
+     "type": "TEXT",
+     "about": "Farm number"
+    },
+    {
+     "name": "crop",
+     "type": "TEXT",
+     "about": "Crop reported this year"
+    },
+    {
+     "name": "acres",
+     "type": "REAL",
+     "about": "Field area, in acres"
+    },
+    {
+     "name": "irrigated",
+     "type": "TEXT",
+     "about": "Is the field irrigated? Y or N"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Sky Blue",
+     "color": "#cfe9f7"
+    },
+    {
+     "name": "Pink",
+     "color": "#f06292"
+    },
+    {
+     "name": "Gold",
+     "color": "#ffca28"
+    },
+    {
+     "name": "Leaf Green",
+     "color": "#43a047"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Every <b>fallow</b> field",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "crop = 'Fallow'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 0,
+     "rule": "<b>Hay</b> fields of <b>40 acres or less</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "crop = 'Hay'",
+       "method": "new"
+      },
+      {
+       "type": "attribute",
+       "where": "acres <= 40",
+       "method": "subset"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "<b>Corn</b> fields that are <b>not irrigated</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "crop = 'Corn'",
+       "method": "new"
+      },
+      {
+       "type": "attribute",
+       "where": "irrigated = 'Y'",
+       "method": "remove"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "<b>Irrigated corn</b> fields",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "crop = 'Corn'",
+       "method": "new"
+      },
+      {
+       "type": "attribute",
+       "where": "irrigated = 'Y'",
+       "method": "subset"
+      }
+     ]
+    },
+    {
+     "color": 3,
+     "rule": "Every <b>soybean</b> field, <b>plus</b> hay fields <b>over 40 acres</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "crop = 'Soybeans'",
+       "method": "new"
+      },
+      {
+       "type": "attribute",
+       "where": "crop = 'Hay' AND acres > 40",
+       "method": "add"
+      }
+     ]
+    }
+   ]
   },
   {
    "number": 10,
@@ -518,12 +1635,51 @@
    "table": "ownership",
    "about": "Land parcels in and around a state forest, one polygon per parcel.",
    "file": "level10_cat.geojson",
+   "grid": "art/level10_cat.grid.json",
    "location": true,
+   "gem_size": 100,
+   "units": "m",
    "lesson": [
     "Attribute queries ask about a feature’s <b>values</b>. <b>Select by Location</b> asks where a feature is <b>in relation to other features</b>.",
     "Here the parcels are compared with the parcels you’ve <b>already selected</b>. <b>Boundary touches</b> picks parcels whose boundaries touch a selected parcel. <b>Intersect</b> picks parcels that share any area or boundary, so it also picks the selected parcels themselves.",
     "Combine tools with the <b>selection type</b>: <i>new</i> replaces the selection, <i>add to</i> adds, <i>remove from</i> takes away, and <i>select subset</i> keeps only the parcels that pass the new test too.",
     "Nothing in the attribute table says which parcels are next to the forest. Some questions can only be answered by location!"
+   ],
+   "questions": [
+    {
+     "question": "You select one parcel, then run <b>Intersect</b> against it. Which parcels end up selected?",
+     "options": [
+      "Only its neighbors",
+      "The parcel itself and its neighbors",
+      "Only the parcel itself",
+      "Every parcel in the layer"
+     ],
+     "answer": 1,
+     "explain": "Intersect includes anything that shares space <i>or</i> a boundary, and a parcel shares space with itself.",
+     "hints": [
+      "That’s Boundary touches. Does a parcel intersect itself?",
+      null,
+      "Its neighbors share a boundary with it, and a shared boundary counts as intersecting.",
+      "Only parcels that share space or a boundary with the selected one."
+     ]
+    },
+    {
+     "question": "You have the forest selected and want only the <b>private</b> parcels that touch it. After running Boundary touches, what’s the next step?",
+     "options": [
+      "Run <code>owner_type = 'private'</code> as a <b>new selection</b>",
+      "Run <code>owner_type = 'private'</code> with <b>select subset from the current selection</b>",
+      "Run <code>owner_type = 'private'</code> with <b>add to the current selection</b>",
+      "Nothing; Boundary touches already removed the forest"
+     ],
+     "answer": 1,
+     "explain": "Subset keeps only the touching parcels that are also private.",
+     "hints": [
+      "A new selection throws away the location result and selects every private parcel.",
+      null,
+      "Adding would pile every private parcel onto the selection.",
+      "Forest parcels touch other forest parcels too, so they’re still in the selection."
+     ]
+    }
    ],
    "fields": [
     {
@@ -555,6 +1711,29 @@
      "name": "deed_yr",
      "type": "INTEGER",
      "about": "Year of the most recent deed"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Lavender",
+     "color": "#d9cdf0"
+    },
+    {
+     "name": "Orange",
+     "color": "#f28c28"
+    },
+    {
+     "name": "Emerald",
+     "color": "#2e9e5b"
+    },
+    {
+     "name": "Pink",
+     "color": "#ff8fab"
+    },
+    {
+     "name": "Black",
+     "color": "#1b1b2f"
     }
    ],
    "requests": [
@@ -614,7 +1793,8 @@
       {
        "type": "location",
        "relation": "touches",
-       "method": "new"
+       "method": "new",
+       "source": "selected"
       },
       {
        "type": "attribute",
@@ -623,48 +1803,575 @@
       }
      ]
     }
-   ],
-   "available": true,
-   "colors": [
-    {
-     "name": "Lavender",
-     "color": "#d9cdf0"
-    },
-    {
-     "name": "Orange",
-     "color": "#f28c28"
-    },
-    {
-     "name": "Emerald",
-     "color": "#2e9e5b"
-    },
-    {
-     "name": "Pink",
-     "color": "#ff8fab"
-    },
-    {
-     "name": "Black",
-     "color": "#1b1b2f"
-    }
    ]
   },
   {
    "number": 11,
    "title": "Glowing moon",
-   "skill": "Within a distance",
-   "available": false
+   "skill": "Select by Location: within a distance",
+   "dataset": "Dark-sky preserve parcels",
+   "table": "darksky",
+   "about": "Parcels in and around a dark-sky preserve with an observatory, one polygon per parcel.",
+   "file": "level11_moon.geojson",
+   "grid": "art/level11_moon.grid.json",
+   "location": true,
+   "gem_size": 100,
+   "units": "m",
+   "default_distance": 100,
+   "lesson": [
+    "<b>Within a distance</b> selects features that are no farther than a set distance from the selected features, like asking “what’s within 300 m of here?”",
+    "Distance is measured <b>edge to edge</b>, from the nearest boundary of one feature to the nearest boundary of the other. Neighbors that share a boundary are 0 m apart.",
+    "The selected features are within 0 m of themselves, so they’re always included. If you only want the features around them, take the originals out afterward with <b>Remove from the current selection</b>.",
+    "Always check the units. In this layer, distances are in meters."
+   ],
+   "questions": [
+    {
+     "question": "You select the observatory and run <b>Within a distance</b> of 300 m. Is the observatory itself in the result?",
+     "options": [
+      "Yes",
+      "No"
+     ],
+     "answer": 0,
+     "explain": "It’s 0 m from itself, which is within 300 m. Remove it afterward if you only want its surroundings.",
+     "hints": [
+      null,
+      "Distance is measured edge to edge, and a feature is 0 m from itself."
+     ]
+    },
+    {
+     "question": "How is the distance between two parcels measured here?",
+     "options": [
+      "Center to center",
+      "Edge to edge (nearest boundaries)",
+      "Corner to corner",
+      "Along roads"
+     ],
+     "answer": 1,
+     "explain": "GIS measures the shortest distance between the two shapes, which is between their nearest edges.",
+     "hints": [
+      "Center to center would be farther for big parcels.",
+      null,
+      "It’s the shortest gap between the two shapes, wherever that is.",
+      "That would be a network analysis, a different tool."
+     ]
+    }
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "parcel_id",
+     "type": "TEXT",
+     "about": "Parcel ID"
+    },
+    {
+     "name": "land_use",
+     "type": "TEXT",
+     "about": "Current land use"
+    },
+    {
+     "name": "sky_qual",
+     "type": "REAL",
+     "about": "Night sky brightness in magnitudes per square arcsecond (higher = darker sky)"
+    },
+    {
+     "name": "outdoor_lights",
+     "type": "INTEGER",
+     "about": "Outdoor light fixtures counted in the last survey"
+    },
+    {
+     "name": "owner_type",
+     "type": "TEXT",
+     "about": "What kind of owner holds the parcel"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Navy",
+     "color": "#172554"
+    },
+    {
+     "name": "Pine",
+     "color": "#1f5f3a"
+    },
+    {
+     "name": "Cream",
+     "color": "#fff5d6"
+    },
+    {
+     "name": "Pale Gold",
+     "color": "#f6d77a"
+    },
+    {
+     "name": "White",
+     "color": "#ffffff"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Every <b>conservation</b> parcel",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "land_use = 'conservation'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "Every <b>farm</b> parcel",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "land_use = 'farm'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "The <b>observatory</b> parcels",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "land_use = 'observatory'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 3,
+     "rule": "A lighting ordinance covers every parcel <b>within 300 m</b> of the observatory, <b>not counting</b> the observatory itself.",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "land_use = 'observatory'",
+       "method": "new"
+      },
+      {
+       "type": "location",
+       "relation": "distance",
+       "method": "new",
+       "source": "selected",
+       "distance": 300
+      },
+      {
+       "type": "attribute",
+       "where": "land_use = 'observatory'",
+       "method": "remove"
+      }
+     ]
+    },
+    {
+     "color": 4,
+     "rule": "Conservation parcels with a sky quality of <b>21.5 or higher</b> (the darkest skies)",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "land_use = 'conservation' AND sky_qual >= 21.5",
+       "method": "new"
+      }
+     ]
+    }
+   ]
   },
   {
    "number": 12,
-   "title": "Pond and vine",
-   "skill": "Reference layers: within, contains, crossed by",
-   "available": false
+   "title": "Pond and trail",
+   "skill": "Location vs. other layers: within, contains, crossed by",
+   "dataset": "Parcels around Heron Pond",
+   "table": "parcels",
+   "about": "Small parcels around a pond, one polygon per parcel. Three other layers sit on top: the pond, a trail and some springs.",
+   "file": "level12_pond.geojson",
+   "location": true,
+   "gem_size": 100,
+   "units": "m",
+   "references": [
+    {
+     "table": "ponds",
+     "file": "level12_ponds.geojson",
+     "kind": "polygon",
+     "about": "Pond outline"
+    },
+    {
+     "table": "trails",
+     "file": "level12_trails.geojson",
+     "kind": "line",
+     "about": "Hiking trail"
+    },
+    {
+     "table": "springs",
+     "file": "level12_springs.geojson",
+     "kind": "point",
+     "about": "Mapped springs"
+    }
+   ],
+   "lesson": [
+    "So far you’ve compared parcels with other parcels. Select by Location can also compare them with <b>a different layer</b>. This level has three: a pond (polygon), a trail (line) and springs (points). They’re drawn on top of the painting.",
+    "<b>Intersect</b> selects parcels that share <i>any</i> space with the other layer: a parcel half in the pond intersects it, and so does a parcel the trail passes through.",
+    "<b>Are completely within</b> selects parcels that lie entirely inside the other layer’s shape, with no part sticking out.",
+    "<b>Completely contain</b> is the reverse: parcels that have a whole feature of the other layer inside them, like a spring.",
+    "Choose the other layer in the <b>Selecting features</b> menu."
+   ],
+   "questions": [
+    {
+     "question": "A parcel is half in the pond and half on land. Which is true?",
+     "options": [
+      "It intersects the pond and is completely within it",
+      "It intersects the pond but is not completely within it",
+      "It is completely within the pond but doesn’t intersect it",
+      "Neither"
+     ],
+     "answer": 1,
+     "explain": "It shares space with the pond, so it intersects, but part of it sticks out, so it isn’t completely within.",
+     "hints": [
+      "Part of the parcel is on land, so it isn’t <i>completely</i> within.",
+      null,
+      "Anything completely within the pond also intersects it.",
+      "It does share space with the pond."
+     ]
+    },
+    {
+     "question": "Which relationship finds the parcels that have a spring inside them?",
+     "options": [
+      "Are completely within",
+      "Completely contain",
+      "Boundary touches"
+     ],
+     "answer": 1,
+     "explain": "The parcel contains the spring.",
+     "hints": [
+      "A parcel can’t be within a point; it’s the other way around.",
+      null,
+      "A spring point inside a parcel isn’t on its boundary."
+     ]
+    }
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "parcel_id",
+     "type": "TEXT",
+     "about": "Parcel ID"
+    },
+    {
+     "name": "cover",
+     "type": "TEXT",
+     "about": "Main land cover (from an older survey)"
+    },
+    {
+     "name": "acres",
+     "type": "REAL",
+     "about": "Parcel area, in acres"
+    },
+    {
+     "name": "owner_type",
+     "type": "TEXT",
+     "about": "What kind of owner holds the parcel"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Meadow",
+     "color": "#9ccc65"
+    },
+    {
+     "name": "Shore Blue",
+     "color": "#81d4fa"
+    },
+    {
+     "name": "Deep Blue",
+     "color": "#1976d2"
+    },
+    {
+     "name": "Fern",
+     "color": "#2e7d32"
+    },
+    {
+     "name": "Pink",
+     "color": "#ec407a"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Every <b>grassland</b> parcel",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "cover = 'grassland'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "Parcels that touch <b>any part</b> of Heron Pond",
+     "solution": [
+      {
+       "type": "location",
+       "relation": "intersects",
+       "method": "new",
+       "source": "ponds"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "Parcels that are <b>completely within</b> Heron Pond",
+     "solution": [
+      {
+       "type": "location",
+       "relation": "within",
+       "method": "new",
+       "source": "ponds"
+      }
+     ]
+    },
+    {
+     "color": 3,
+     "rule": "Parcels the <b>Ridge Trail passes through</b>",
+     "solution": [
+      {
+       "type": "location",
+       "relation": "intersects",
+       "method": "new",
+       "source": "trails"
+      }
+     ]
+    },
+    {
+     "color": 4,
+     "rule": "Parcels that <b>contain</b> a spring",
+     "solution": [
+      {
+       "type": "location",
+       "relation": "contains",
+       "method": "new",
+       "source": "springs"
+      }
+     ]
+    }
+   ]
   },
   {
    "number": 13,
-   "title": "Capstone",
-   "skill": "Everything",
-   "available": false
+   "title": "Hot air balloon",
+   "skill": "Capstone: everything",
+   "dataset": "County tax parcels",
+   "table": "tax_parcels",
+   "about": "Tax parcels from a county assessor, with the short, all-caps field names that assessor data usually has. One polygon per parcel.",
+   "file": "level13_balloon.geojson",
+   "grid": "art/level13_balloon.grid.json",
+   "location": true,
+   "gem_size": 100,
+   "units": "m",
+   "lesson": [
+    "This painting uses everything: comparisons, AND, OR, parentheses, IN, BETWEEN, LIKE, NULL, selection types and Select by Location.",
+    "Real datasets rarely have friendly field names. Here they’re short and all caps, like <code>LU_CODE</code> and <code>YR_BLT</code>. Read the field descriptions (the <b>metadata</b>) before you write a query, and click <b>values</b> to see how codes are actually stored.",
+    "Plan each request before you type: which field, which operator, which values? Does it need more than one step?"
+   ],
+   "questions": [
+    {
+     "question": "A field called <code>ASSD_VAL</code> could mean several things. Where should you look to find out?",
+     "options": [
+      "Guess from the name",
+      "The field’s description (metadata)",
+      "The painting"
+     ],
+     "answer": 1,
+     "explain": "Metadata tells you what a field holds, its units and how its values are coded.",
+     "hints": [
+      "Guessing leads to wrong answers that look right.",
+      null,
+      "The painting isn’t part of the data."
+     ]
+    },
+    {
+     "question": "Which query finds AG parcels in ZIP 05301 or 05346?",
+     "options": [
+      "<code>LU_CODE = 'AG' AND ZIP = '05301' OR ZIP = '05346'</code>",
+      "<code>LU_CODE = 'AG' AND (ZIP = '05301' OR ZIP = '05346')</code>",
+      "<code>LU_CODE = 'AG' AND ZIP = 05301 OR 05346</code>"
+     ],
+     "answer": 1,
+     "explain": "Parentheses keep the two ZIP codes together, and ZIP is text, so its values need quotes.",
+     "hints": [
+      "Without parentheses, every parcel in 05346 is selected, AG or not.",
+      null,
+      "ZIP is a TEXT field, and each side of OR needs a complete condition."
+     ]
+    }
+   ],
+   "fields": [
+    {
+     "name": "fid",
+     "type": "INTEGER",
+     "about": "Feature ID: a unique number the GIS assigns to each feature"
+    },
+    {
+     "name": "PARCEL_ID",
+     "type": "TEXT",
+     "about": "Assessor parcel number (map-block-lot)"
+    },
+    {
+     "name": "LU_CODE",
+     "type": "TEXT",
+     "about": "Land use code: RES residential, COM commercial, AG agricultural, OS open space, INST institutional"
+    },
+    {
+     "name": "ZIP",
+     "type": "TEXT",
+     "about": "ZIP code of the parcel"
+    },
+    {
+     "name": "OWNER_NM",
+     "type": "TEXT",
+     "about": "Owner name as written on the deed (last name first)"
+    },
+    {
+     "name": "YR_BLT",
+     "type": "INTEGER",
+     "about": "Year the main building was built (blank if unknown)"
+    },
+    {
+     "name": "ASSD_VAL",
+     "type": "INTEGER",
+     "about": "Assessed value, in dollars"
+    }
+   ],
+   "available": true,
+   "colors": [
+    {
+     "name": "Sky Blue",
+     "color": "#9fd3f5"
+    },
+    {
+     "name": "Meadow",
+     "color": "#7cb342"
+    },
+    {
+     "name": "White",
+     "color": "#ffffff"
+    },
+    {
+     "name": "Crimson",
+     "color": "#d32f2f"
+    },
+    {
+     "name": "Gold",
+     "color": "#fbc02d"
+    },
+    {
+     "name": "Wicker",
+     "color": "#8d6e63"
+    },
+    {
+     "name": "Charcoal",
+     "color": "#263238"
+    }
+   ],
+   "requests": [
+    {
+     "color": 0,
+     "rule": "Parcels coded <b>OS</b> (open space) or <b>INST</b> (institutional)",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "LU_CODE IN ('OS', 'INST')",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 1,
+     "rule": "<b>Agricultural</b> parcels in ZIP code <b>05301 or 05346</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "LU_CODE = 'AG' AND (ZIP = '05301' OR ZIP = '05346')",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 2,
+     "rule": "Parcels with <b>no year built</b> on record",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "YR_BLT IS NULL",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 3,
+     "rule": "Parcels owned by a <b>trust</b> (TRUST appears anywhere in the owner name)",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "OWNER_NM LIKE '%TRUST%'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 4,
+     "rule": "Parcels owned by an <b>LLC</b> (the owner name ends in LLC)",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "OWNER_NM LIKE '%LLC'",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 5,
+     "rule": "Parcels assessed <b>from $250,000 to $300,000</b>",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "ASSD_VAL BETWEEN 250000 AND 300000",
+       "method": "new"
+      }
+     ]
+    },
+    {
+     "color": 6,
+     "rule": "Every <b>OS or INST</b> parcel that <b>shares a boundary</b> with a trust- or LLC-owned parcel",
+     "solution": [
+      {
+       "type": "attribute",
+       "where": "OWNER_NM LIKE '%TRUST%' OR OWNER_NM LIKE '%LLC'",
+       "method": "new"
+      },
+      {
+       "type": "location",
+       "relation": "touches",
+       "method": "new",
+       "source": "selected"
+      },
+      {
+       "type": "attribute",
+       "where": "LU_CODE IN ('OS', 'INST')",
+       "method": "subset"
+      }
+     ]
+    }
+   ]
   }
  ]
 }
